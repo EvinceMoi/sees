@@ -1,23 +1,29 @@
 qt_policy(SET QTP0001 NEW)
 
-qt6_add_library(qmlui STATIC)
+qt_add_library(qmlui STATIC)
 
-file(GLOB_RECURSE QML_SOURCE
-	RELATIVE
-		${CMAKE_CURRENT_LIST_DIR}
-		*.qml
+set(qml_files
+	MainWindow.qml
+	Panel.qml
+	IconButton.qml
+	SearchView.qml
+)
+set(singleton_qml_files
+	Fonts.qml
+	Icons.qml
+)
+set_source_files_properties(${singleton_qml_files}
+	PROPERTIES QT_QML_SINGLETON_TYPE TRUE
+)
+set(res_files
+	res/font/CaskaydiaCove.ttf
 )
 
-qt6_add_qml_module(qmlui
+qt_add_qml_module(qmlui
 	URI ui
 	VERSION 1.0
-	QML_FILES ${QML_SOURCE}
+	OUTPUT_DIRECTORY ui
+	QML_FILES ${qml_files} ${singleton_qml_files}
+	RESOURCES ${res_files}
 	NO_PLUGIN
 )
-
-# target_link_directories(qmlui
-# 	PUBLIC
-# 		${QT_QML_OUTPUT_DIRECTORY}
-# )
-
-# message(STATUS ">>> ${QT_QML_OUTPUT_DIRECTORY}")

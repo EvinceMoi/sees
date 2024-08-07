@@ -3,20 +3,30 @@ set shell := ["nu", "-c"]
 default:
     @just --list
 
+alias c := configure
 # cmake configure
 configure:
     mkdir build
-    cd build; cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+    cd build; cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug
 
-build:
-    cd build; ninja
+configure-with-qml-debug:
+    mkdir build
+    cd build; cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug -DENABLE_QML_DEBUG=1
+
 
 alias b := build
+build:
+    cd build; ninja
 
 fresh-build: configure build
 
 clean:
     cd build; rm -rfi *
 
+alias r := run
 run:
     cd build; ./bin/sees
+
+run-with-trace $QML_IMPORT_TRACE="1":
+    cd build; ./bin/sees
+

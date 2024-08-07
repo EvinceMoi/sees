@@ -1,14 +1,14 @@
 import QtCore
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Dialogs
 
 import MpvPlayer
+
 
 ApplicationWindow {
 	id: root
 	width: 800
-	height: 640
+	height: 480
 	visible: true
 
 	Shortcut {
@@ -37,12 +37,38 @@ ApplicationWindow {
 		}
 	}
 
-	FileDialog {
-		id: fileDialog
+	MouseArea {
+		anchors.left: parent.left
+		anchors.top: parent.top
+		width: 0.1 * parent.width
+		height: 0.8 * parent.height  // the rest should be to video controller
 
-		currentFolder: StandardPaths.standardLocations(StandardPaths.DownloadLocation)[0]
-		onAccepted: {
-			player.loadFile(selectedFile)
+		hoverEnabled: true
+
+		onEntered: {
+			drawer.open()
+		}
+	}
+
+	Drawer {
+		id: drawer
+		width: 0.7 * parent.width
+		height: parent.height
+
+		dragMargin: 100
+		dim: true
+		opacity: 0.6
+
+		MouseArea {
+			anchors.fill: parent
+			hoverEnabled: true
+			onExited: {
+				drawer.close()
+			}
+
+			Panel {
+				anchors.fill: parent
+			}
 		}
 	}
 }

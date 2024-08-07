@@ -1,4 +1,4 @@
-qt6_add_library(player STATIC)
+qt_add_library(player STATIC)
 
 target_sources(player
 	PRIVATE
