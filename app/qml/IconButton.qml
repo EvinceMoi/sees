@@ -4,8 +4,8 @@ Item {
 	id: root
 
 	signal clicked
-    property real size: 48
-    property string icon
+    property real size: 32
+    required property string icon
 
 	width: size
 	height: size

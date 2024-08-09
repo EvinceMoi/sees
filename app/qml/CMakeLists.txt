@@ -7,6 +7,7 @@ set(qml_files
 	Panel.qml
 	IconButton.qml
 	SearchView.qml
+	RoomCover.qml
 )
 set(singleton_qml_files
 	Fonts.qml

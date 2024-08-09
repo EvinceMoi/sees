@@ -4,71 +4,72 @@ import QtQuick.Controls
 
 import MpvPlayer
 
-
 ApplicationWindow {
-	id: root
-	width: 800
-	height: 480
-	visible: true
+    id: root
+    width: 800
+    height: 480
+    visible: true
 
-	Shortcut {
-		sequence: "q"
-		onActivated: Qt.quit()
-	}
-	Shortcut {
-		sequence: "m"
-		onActivated: player.setPropertyAsync(MpvProps.Mute, !player.getProperty(MpvProps.Mute))
-	}
+    Shortcut {
+        sequence: "q"
+        onActivated: Qt.quit()
+    }
+    Shortcut {
+        sequence: "m"
+        onActivated: player.setPropertyAsync(MpvProps.Mute,
+                                             !player.getProperty(MpvProps.Mute))
+    }
 
-	MpvPlayer {
-		id: player
-		anchors.fill: parent
-	}
+    MpvPlayer {
+        id: player
+        anchors.fill: parent
+    }
 
-	DropArea {
-		id: dropArea
-		anchors.fill: parent
-		onEntered: function(drag) {
-			drag.accept(Qt.LinkAction);
-		}
-		onDropped: function(drop) {
-			if (drop.hasUrls)
-				player.loadFile(drop.urls[0]);
-		}
-	}
+    DropArea {
+        id: dropArea
+        anchors.fill: parent
+        onEntered: function (drag) {
+            drag.accept(Qt.LinkAction)
+        }
+        onDropped: function (drop) {
+            if (drop.hasUrls)
+                player.loadFile(drop.urls[0])
+        }
+    }
 
-	MouseArea {
-		anchors.left: parent.left
-		anchors.top: parent.top
-		width: 0.1 * parent.width
-		height: 0.8 * parent.height  // the rest should be to video controller
+    MouseArea {
+        anchors.left: parent.left
+        anchors.top: parent.top
+        width: 0.1 * parent.width
+        height: 0.8 * parent.height // the rest should be to video controller
 
-		hoverEnabled: true
+        hoverEnabled: true
 
-		onEntered: {
-			drawer.open()
-		}
-	}
+        onEntered: {
+            drawer.open()
+        }
+    }
 
-	Drawer {
-		id: drawer
-		width: 0.7 * parent.width
-		height: parent.height
+    Drawer {
+        id: drawer
+        width: 0.7 * parent.width
+        height: parent.height
 
-		dragMargin: 100
-		dim: true
-		opacity: 0.6
+        dragMargin: 100
+        dim: true
+        opacity: 0.6
 
-		MouseArea {
-			anchors.fill: parent
-			hoverEnabled: true
-			onExited: {
-				drawer.close()
-			}
+        MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            onExited: {
 
-			Panel {
-				anchors.fill: parent
-			}
-		}
-	}
+                // drawer.close()
+            }
+
+            Panel {
+                anchors.fill: parent
+            }
+        }
+    }
 }

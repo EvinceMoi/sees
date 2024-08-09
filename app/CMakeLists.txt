@@ -1,8 +1,10 @@
 add_subdirectory(qml)
 add_subdirectory(player)
+add_subdirectory(source)
 
 add_executable(sees
 	main.cpp
+	Application.h Application.cpp
 )
 
 target_link_libraries(sees
@@ -12,4 +14,5 @@ target_link_libraries(sees
 		Qt6::Qml
 		player
 		qmlui
+		source
 )
