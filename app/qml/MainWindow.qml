@@ -3,6 +3,7 @@ import QtQuick
 import QtQuick.Controls
 
 import MpvPlayer
+import Source
 
 ApplicationWindow {
     id: root
@@ -23,6 +24,14 @@ ApplicationWindow {
     MpvPlayer {
         id: player
         anchors.fill: parent
+    }
+
+    Connections {
+        id: sm
+        target: Source
+        function onGotMedia(mi) {
+            player.loadMedia(mi.video, mi.audio, mi.subtitle)
+        }
     }
 
     DropArea {

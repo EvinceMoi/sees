@@ -47,6 +47,7 @@ public:
     QUrl currentUrl() const;
 
     Q_INVOKABLE void loadFile(const QString &file);
+    Q_INVOKABLE void loadMedia(const QString &video, const QString &audio, const QString &subtitle);
 
 Q_SIGNALS:
     void mediaTitleChanged();

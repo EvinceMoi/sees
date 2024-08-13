@@ -26,7 +26,8 @@ public:
 public:
 	void init();
 
-	QNetworkReply* httpGet(const QNetworkRequest& req);
+private slots:
+	void doQuit();
 
 private:
 	QQmlApplicationEngine* qmlengine_;

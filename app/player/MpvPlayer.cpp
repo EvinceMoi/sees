@@ -116,6 +116,27 @@ void MpvPlayer::loadFile(const QString &file)
     Q_EMIT command(QStringList() << QStringLiteral("loadfile") << m_currentUrl.toLocalFile());
 }
 
+void MpvPlayer::loadMedia(const QString &video, const QString &audio, const QString &subtitle)
+{
+	QStringList commands;
+	commands << QStringLiteral("loadfile") << video;
+	if (!audio.isEmpty() || !subtitle.isEmpty()) {
+		commands << QStringLiteral("replace") << QStringLiteral("0");
+
+		QStringList options;
+		if (!audio.isEmpty()) {
+			options.append(QString("audio-file=%1").arg(audio));
+		}
+		if (!subtitle.isEmpty()) {
+			options.append(QString("sub-file=%1").arg(subtitle));
+		}
+
+		commands << options.join(',');
+	}
+
+	Q_EMIT command(commands);
+}
+
 QString MpvPlayer::mediaTitle()
 {
     return getProperty(MpvProps::self()->MediaTitle).toString();

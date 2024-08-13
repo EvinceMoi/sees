@@ -1,8 +1,7 @@
 import QtQuick
+import Source
 
 Item {
-
-    // radius: 4
     id: root
 
     required property string img
@@ -39,6 +38,14 @@ Item {
             width: parent.width
             anchors.top: parent.top
             anchors.left: parent.left
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    // Source.getMetaInfo("douyu", "1870001")
+                    Source.getMediaInfo("douyu", "1870001")
+                }
+            }
 
             Image {
                 id: snap
