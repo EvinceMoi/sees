@@ -44,7 +44,7 @@ void Source::registerProviders()
 			// got meta
 		});
 		connect(sp.get(), &SourceProvider::gotMedia, [this](MediaInfo* mi){
-			emit gotMedia(mi);
+			emit play(mi);
 		});
 	}
 }

@@ -29,7 +29,7 @@ ApplicationWindow {
     Connections {
         id: sm
         target: Source
-        function onGotMedia(mi) {
+        function onPlay(mi) {
             player.loadMedia(mi.video, mi.audio, mi.subtitle)
         }
     }

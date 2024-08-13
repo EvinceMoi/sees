@@ -22,7 +22,7 @@ public:
 	Q_INVOKABLE void getMediaInfo(const QString& type, const QString& ref);
 
 signals:
-	void gotMedia(MediaInfo* mi);
+	void play(MediaInfo* mi);
 
 
 private:
