@@ -17,7 +17,7 @@ if (${ENABLE_QML_DEBUG})
 	message(STATUS "flags: ${CMAKE_CXX_FLAGS_DEBUG}")
 endif()
 
-find_package(Qt6 6.7 REQUIRED COMPONENTS Core Quick Qml Network)
+find_package(Qt6 6.7 REQUIRED COMPONENTS Core Quick Qml Network Sql)
 qt_standard_project_setup()
 
 add_subdirectory(third_party/mpvqt)

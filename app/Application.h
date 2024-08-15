@@ -31,5 +31,4 @@ private slots:
 
 private:
 	QQmlApplicationEngine* qmlengine_;
-	QNetworkAccessManager* nam_;
 };
