@@ -4,7 +4,7 @@ import Source
 Item {
     id: root
 
-    required property string img
+    required property string snapshot
     required property string nick
     required property string avatar
     required property string title
@@ -42,8 +42,8 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    // Source.getMetaInfo("douyu", "1870001")
-                    Source.getMediaInfo("douyu", "1870001")
+                    Source.getMetaInfo("douyu", "1870001")
+                    // Source.getMediaInfo("douyu", "1870001")
                 }
             }
 
@@ -53,7 +53,7 @@ Item {
                 anchors.fill: parent
                 fillMode: Image.PreserveAspectFit
                 clip: true
-                source: root.img
+                source: root.snapshot
             }
         }
 

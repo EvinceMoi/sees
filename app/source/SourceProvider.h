@@ -3,8 +3,7 @@
 #include <QString>
 #include <QObject>
 #include <QNetworkRequest>
-#include <MetaInfo.h>
-#include <MediaInfo.h>
+#include "Types.h"
 
 class QNetworkAccessManager;
 

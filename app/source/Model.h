@@ -1,5 +1,8 @@
 #pragma once
 #include <QObject>
+#include <QList>
+
+class MetaInfo;
 
 class Model : public QObject
 {
@@ -10,5 +13,13 @@ public:
 
 	void initSchema();
 
+	void loadFollows();
+	void updateFollow(MetaInfo*);
+
+	QList<MetaInfo*> data();
+
+signals:
+
 private:
+	QList<MetaInfo*> follows_;
 };

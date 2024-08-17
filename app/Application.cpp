@@ -8,8 +8,7 @@
 #include "MpvProps.h"
 
 #include "Source.h"
-#include "MetaInfo.h"
-#include "MediaInfo.h"
+#include "Types.h"
 
 Application::Application(int argc, char* argv[])
 	: QGuiApplication(argc, argv)

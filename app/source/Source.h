@@ -3,11 +3,12 @@
 #include <QObject>
 #include <mutex>
 #include <QList>
+#include "Model.h"
 
 class MetaInfo;
 class MediaInfo;
 class SourceProvider;
-class QNetworkAccessManager;
+// class Model;
 
 class Source : public QObject
 {
@@ -21,13 +22,16 @@ public:
 	Q_INVOKABLE void getMetaInfo(const QString& type, const QString& ref); // ("douyu", "roomid / url")
 	Q_INVOKABLE void getMediaInfo(const QString& type, const QString& ref);
 
+	Q_INVOKABLE QList<MetaInfo*> follows();
+
 signals:
 	void play(MediaInfo* mi);
 
 
 private:
 	void registerProviders();
-	void roomUpsert(MetaInfo *);
+	void loadData();
+	// void roomUpsert(MetaInfo *);
 
 private:
 	using SourceProviderPtr = std::shared_ptr<SourceProvider>;
@@ -36,6 +40,7 @@ private:
 
 	static std::once_flag once_flag_;
 
-	// QNetworkAccessManager *nam_;
-	QList<MetaInfo *> rooms_;
+	// QList<MetaInfo *> rooms_;
+
+	Model model_;
 };

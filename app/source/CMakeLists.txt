@@ -1,6 +1,6 @@
 add_library(source STATIC
 	Source.h Source.cpp
-	MetaInfo.h MediaInfo.h
+	Types.h
 	Model.h Model.cpp
 	SourceProvider.h SourceProvider.cpp
 	DouyuProvider.h DouyuProvider.cpp

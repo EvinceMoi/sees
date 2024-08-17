@@ -3,11 +3,11 @@
 #include <QNetworkReply>
 #include <QByteArray>
 #include <QRegularExpression>
-#include <MetaInfo.h>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QJSEngine>
+#include "Types.h"
 
 DouyuProvider::DouyuProvider(QObject* parent)
 	: SourceProvider(parent)
@@ -84,12 +84,12 @@ MetaInfo* DouyuProvider::processMeta(const QByteArray& data)
 	if (!ri.isObject()) return nullptr;
 
 	auto mi = new MetaInfo;
-	mi->id = ri["rid"].toString();
+	mi->rid = QString::number(ri["rid"].toInteger());
 	mi->type = QString("douyu");
 	mi->title = ri["roomName"].toString();
 	mi->nick = ri["nickname"].toString();
 	mi->avatar = ri["avatar"].toString();
-	mi->image = ri["roomSrc"].toString();
+	mi->snapshot = ri["roomSrc"].toString();
 	mi->heat = ri["hn"].toString();
 	mi->live = ri["isLive"].toBool();
 	mi->category = ri["cate2Name"].toString();

@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Layouts
 
+import Source
+
 Item {
     anchors {
         leftMargin: 10
@@ -112,7 +114,7 @@ Item {
             cellHeight: h
             clip: true
 
-            model: lstModel
+            model: Source.follows()
             delegate: RoomCover {
                 width: gv.w
                 height: gv.h
