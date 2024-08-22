@@ -10,8 +10,9 @@ std::once_flag Source::once_flag_;
 
 Source::Source(QObject* parent)
 	: QObject(parent)
+	, model_(new Model(this))
 {
-	model_.initSchema();
+	model_->initSchema();
 }
 
 Source::~Source()
@@ -41,19 +42,19 @@ void Source::registerProviders()
 	}
 
 	for (auto &[k, sp]: mtype_) {
-		connect(sp.get(), &SourceProvider::gotMeta, [this](MetaInfo* mi){
+		connect(sp.get(), &SourceProvider::gotMeta, [this](const MetaInfo& mi){
 			// got meta
-			model_.updateFollow(mi);
+			model_->updateFollow(mi);
 		});
-		connect(sp.get(), &SourceProvider::gotMedia, [this](MediaInfo* mi){
-			emit mediaInfoFetched(mi);
+		connect(sp.get(), &SourceProvider::gotMedia, [this](const MediaInfo& mi){
+			emit mediaInfoFetched(mi.video, mi.audio, mi.subtitle);
 		});
 	}
 }
 
 void Source::loadData()
 {
-	model_.loadFollows();
+	model_->loadFollows();
 }
 
 void Source::getMetaInfo(const QString& type, const QString& ref)
@@ -72,13 +73,16 @@ void Source::getMediaInfo(const QString& type, const QString& ref)
 	sp->fetchMedia(ref);
 }
 
-MetaModel* Source::follows()
+Model* Source::follows()
 {
-	qDebug() << "call follows";
-	return model_.data();
+	return model_;
 }
 
 void Source::refresh(int gap)
 {
 	gap = std::max(0, gap);
+	auto outdated = model_->outdated(gap);
+	for (auto& it : outdated) {
+		getMetaInfo(it.first, it.second);
+	}
 }

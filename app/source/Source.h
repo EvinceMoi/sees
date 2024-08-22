@@ -5,10 +5,7 @@
 #include <QList>
 #include "Model.h"
 
-class MetaInfo;
-class MediaInfo;
 class SourceProvider;
-class MetaModel;
 
 class Source : public QObject
 {
@@ -22,13 +19,12 @@ public:
 	Q_INVOKABLE void getMetaInfo(const QString& type, const QString& ref); // ("douyu", "roomid / url")
 	Q_INVOKABLE void getMediaInfo(const QString& type, const QString& ref);
 
-	Q_INVOKABLE MetaModel* follows();
+	Q_INVOKABLE Model* follows();
 
 	Q_INVOKABLE void refresh(int gap);
 
 signals:
-	void mediaInfoFetched(MediaInfo* mi);
-
+	void mediaInfoFetched(const QString& video, const QString& audio, const QString& subtitle);
 
 private:
 	void registerProviders();
@@ -41,5 +37,5 @@ private:
 
 	static std::once_flag once_flag_;
 
-	Model model_;
+	Model* model_;
 };

@@ -43,8 +43,8 @@ void DouyuProvider::fetchMeta(const QString& rid)
 	connect(reply, &QNetworkReply::finished, [this, reply](){
 		auto data = reply->readAll();
 		auto mi = processMeta(data);
-		// roomUpsert(mi);
-		emit gotMeta(mi);
+		if (mi)
+			emit gotMeta(mi.value());
 		reply->deleteLater();
 	});
 	connect(reply, &QNetworkReply::errorOccurred, [reply](QNetworkReply::NetworkError code){
@@ -68,32 +68,32 @@ void DouyuProvider::fetchMedia(const QString& rid)
 	});
 }
 
-MetaInfo* DouyuProvider::processMeta(const QByteArray& data)
+std::optional<MetaInfo> DouyuProvider::processMeta(const QByteArray& data)
 {
 	static QRegularExpression re(R"(<script id="vike_pageContext" type="application/json">(.*)</script>)");
 	QString html(data);
 	auto matches = re.match(html);
-	if (!matches.hasMatch()) return nullptr;
+	if (!matches.hasMatch()) return {};
 
 	auto props = matches.captured(1);
 	// qDebug() << props;
 	auto doc = QJsonDocument::fromJson(props.toUtf8());
-	if (doc.isNull()) return nullptr;
+	if (doc.isNull()) return {};
 	auto ri = doc["pageProps"]["room"]["roomInfo"]["roomInfo"];
 	qDebug() << ri;
-	if (!ri.isObject()) return nullptr;
+	if (!ri.isObject()) return {};
 
-	auto mi = new MetaInfo;
-	mi->rid = QString::number(ri["rid"].toInteger());
-	mi->type = QString("douyu");
-	mi->title = ri["roomName"].toString();
-	mi->nick = ri["nickname"].toString();
-	mi->avatar = ri["avatar"].toString();
-	mi->snapshot = ri["roomSrc"].toString();
-	mi->heat = ri["hn"].toString();
-	mi->live = ri["isLive"].toBool();
-	mi->category = ri["cate2Name"].toString();
-	mi->startTime = ri["showTime"].toInteger();
+	MetaInfo mi;
+	mi.rid = QString::number(ri["rid"].toInteger());
+	mi.type = QString("douyu");
+	mi.title = ri["roomName"].toString();
+	mi.nick = ri["nickname"].toString();
+	mi.avatar = ri["avatar"].toString();
+	mi.snapshot = ri["roomSrc"].toString();
+	mi.heat = ri["hn"].toString();
+	mi.live = ri["isLive"].toBool();
+	mi.category = ri["cate2Name"].toString();
+	mi.startTime = ri["showTime"].toInteger();
 	return mi;
 }
 
@@ -155,7 +155,7 @@ void DouyuProvider::handleMediaInfo(const QString &rid, const QByteArray &data)
 	if (url.isEmpty() || live.isEmpty()) return;
 
 	auto url_live = url + "/" + live;
-	auto mi = new MediaInfo;
-	mi->video = url_live;
+	MediaInfo mi;
+	mi.video = url_live;
 	emit gotMedia(mi);
 }

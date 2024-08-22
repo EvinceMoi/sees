@@ -6,6 +6,7 @@ set(qml_files
 	MainWindow.qml
 	Panel.qml
 	IconButton.qml
+	FollowView.qml
 	SearchView.qml
 	RoomCover.qml
 )

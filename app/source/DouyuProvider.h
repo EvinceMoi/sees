@@ -24,7 +24,7 @@ public:
 private:
 	QNetworkRequest genRequest(const QString& rid, bool mobile) const;
 
-	MetaInfo* processMeta(const QByteArray& data);
+	std::optional<MetaInfo> processMeta(const QByteArray& data);
 	void processMedia(const QString& rid, const QByteArray& data);
 	void handleMediaInfo(const QString& rid, const QByteArray& data);
 

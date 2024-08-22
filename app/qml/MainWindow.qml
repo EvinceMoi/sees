@@ -11,6 +11,8 @@ ApplicationWindow {
     height: 480
     visible: true
 
+    property int refreshTimeout: 180 // in seconds
+
     Shortcut {
         sequence: "q"
         onActivated: Qt.quit()
@@ -26,11 +28,21 @@ ApplicationWindow {
         anchors.fill: parent
     }
 
+    Timer {
+        interval: refreshTimeout * 1000
+        running: true
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: {
+            Source.refresh(refreshTimeout)
+        }
+    }
+
     Connections {
         id: sm
         target: Source
-        function onMediaInfoFetched(mi) {
-            player.loadMedia(mi.video, mi.audio, mi.subtitle)
+        function onMediaInfoFetched(video, audio, subtitle) {
+            player.loadMedia(video, audio, subtitle)
         }
     }
 

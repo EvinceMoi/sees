@@ -56,7 +56,7 @@ Item {
             size: parent.iconSize
             icon: Icons.fav
             onClicked: {
-
+                console.log('fav clicked')
             }
         }
 
@@ -69,7 +69,7 @@ Item {
             size: parent.iconSize
             icon: Icons.all
             onClicked: {
-
+                console.log('all clicked')
             }
         }
 
@@ -82,7 +82,7 @@ Item {
             size: parent.iconSize
             icon: Icons.settings
             onClicked: {
-
+                console.log('settings clicked')
             }
         }
     }
@@ -96,7 +96,7 @@ Item {
         width: parent.width - toolbar.width
         color: '#262629'
 
-        SearchView {
+        FollowView {
             anchors.fill: parent
         }
     }

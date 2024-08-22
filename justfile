@@ -27,6 +27,8 @@ alias r := run
 run:
     cd build; ./bin/sees
 
+br: build run
+
 run-with-trace $QML_IMPORT_TRACE="1":
     cd build; ./bin/sees
 

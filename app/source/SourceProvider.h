@@ -21,8 +21,8 @@ public:
 	virtual void fetchMedia(const QString& in) = 0;
 
 signals:
-	void gotMeta(MetaInfo*);
-	void gotMedia(MediaInfo*);
+	void gotMeta(const MetaInfo& mi);
+	void gotMedia(const MediaInfo& mi);
 
 
 protected:

@@ -11,8 +11,8 @@
 #include "Types.h"
 
 Model::Model(QObject *parent)
-	: QObject(parent)
-	, model_(new MetaModel(this))
+	: QAbstractListModel(parent)
+	, follows_()
 {
 	auto db = QSqlDatabase::addDatabase("QSQLITE");
 	QString path = QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation)[0];
@@ -57,7 +57,7 @@ create table if not exists follows(
 
 void Model::loadFollows()
 {
-	// follows_.clear();
+	follows_.clear();
 
 	QSqlQuery query("select * from follows order by fav desc");
 	auto record = query.record();
@@ -83,24 +83,24 @@ void Model::loadFollows()
 		QString snapshot = query.value(idx_snapshot).toString();
 		QString last_update = query.value(idx_last_update).toString();
 
-		MetaInfo *mi = new MetaInfo;
-		mi->id = id;
-		mi->type = type;
-		mi->rid = rid;
-		mi->nick = nick;
-		mi->avatar = avatar;
-		mi->category = category;
-		mi->follow = true;
-		mi->fav = fav;
-		mi->title = title;
-		mi->snapshot = snapshot;
-		mi->lastUpdate = last_update;
+		MetaInfo mi;
+		mi.id = id;
+		mi.type = type;
+		mi.rid = rid;
+		mi.nick = nick;
+		mi.avatar = avatar;
+		mi.category = category;
+		mi.follow = true;
+		mi.fav = fav;
+		mi.title = title;
+		mi.snapshot = snapshot;
+		mi.lastUpdate = last_update;
 
-		model_->append(mi);
+		doLoad(mi);
 	}
 }
 
-void Model::updateFollow(MetaInfo* mi)
+void Model::updateFollow(const MetaInfo& mi)
 {
 	QSqlQuery query;
 	query.prepare("insert into follows (type, rid, nick, avatar, category, title, snapshot) "
@@ -108,38 +108,38 @@ void Model::updateFollow(MetaInfo* mi)
 				  "on conflict(type, rid) "
 				  "do update set nick = :nick, avatar = :avatar, category = :category, fav = :fav, "
 				  "title = :title, snapshot = :snapshot, lastUpdate = CURRENT_TIMESTAMP");
-	query.bindValue(":type", mi->type);
-	query.bindValue(":rid", mi->rid);
-	query.bindValue(":nick", mi->nick);
-	query.bindValue(":avatar", mi->avatar);
-	query.bindValue(":category", mi->category);
-	query.bindValue(":title", mi->title);
-	query.bindValue(":snapshot", mi->snapshot);
+	query.bindValue(":type", mi.type);
+	query.bindValue(":rid", mi.rid);
+	query.bindValue(":nick", mi.nick);
+	query.bindValue(":avatar", mi.avatar);
+	query.bindValue(":category", mi.category);
+	query.bindValue(":title", mi.title);
+	query.bindValue(":snapshot", mi.snapshot);
 	bool ok = query.exec();
 	if (!ok) {
-		qDebug() << "failed to update follow, type:" << mi->type << ", rid:" << mi->rid << ", nick:" << mi->nick;
+		qDebug() << "failed to update follow, type:" << mi.type << ", rid:" << mi.rid << ", nick:" << mi.nick;
 		qDebug() << query.lastError().text();
 		return;
 	}
 
-	model_->update(mi);
+	doUpdate(mi);
 
 }
 
-MetaModel* Model::data()
+QList<std::pair<QString, QString>> Model::outdated(int duration)
 {
-	return model_;
+	QList<std::pair<QString, QString>> ret; // <type, rid>
+	auto sql = QString("select type, rid from follows where lastUpdate <= datetime('now', '-%1 seconds')").arg(duration);
+	QSqlQuery query(sql);
+	while (query.next()) {
+		auto type = query.value(0).toString();
+		auto rid = query.value(1).toString();
+		ret.append(std::make_pair(type, rid));
+	}
+	return ret;
 }
 
-
-MetaModel::MetaModel(QObject* parent)
-	: QAbstractListModel(parent)
-	, follows_()
-{
-
-}
-
-QHash<int, QByteArray> MetaModel::roleNames() const
+QHash<int, QByteArray> Model::roleNames() const
 {
 	QHash<int, QByteArray> roles;
 	roles[IdRole] = "id";
@@ -159,37 +159,37 @@ QHash<int, QByteArray> MetaModel::roleNames() const
 	return roles;
 }
 
-QVariant MetaModel::data(const QModelIndex &idx, int role) const
+QVariant Model::data(const QModelIndex &idx, int role) const
 {
 	if (!idx.isValid()) return {};
 	auto n = idx.row();
 	if (n >= follows_.size()) return {};
 	auto it = follows_[n];
 	switch (role) {
-		case IdRole: return it->id;
-		case RidRole: return it->rid;
-		case TypeRole: return it->type;
-		case TitleRole: return it->title;
-		case NickRole: return it->nick;
-		case AvatarRole: return it->avatar;
-		case SnapshotRole: return it->snapshot;
-		case CategoryRole: return it->category;
-		case FollowRole: return it->follow;
-		case FavRole: return it->fav;
-		case HeatRole: return it->heat;
-		case LiveRole: return it->live;
-		case StartTimeRole: return it->startTime;
-		case LastUpdateRole: return it->lastUpdate;
+		case IdRole: return it.id;
+		case RidRole: return it.rid;
+		case TypeRole: return it.type;
+		case TitleRole: return it.title;
+		case NickRole: return it.nick;
+		case AvatarRole: return it.avatar;
+		case SnapshotRole: return it.snapshot;
+		case CategoryRole: return it.category;
+		case FollowRole: return it.follow;
+		case FavRole: return it.fav;
+		case HeatRole: return it.heat;
+		case LiveRole: return it.live;
+		case StartTimeRole: return it.startTime;
+		case LastUpdateRole: return it.lastUpdate;
 	}
 	return {};
 }
 
-int MetaModel::rowCount(const QModelIndex &parent) const
+int Model::rowCount(const QModelIndex &) const
 {
 	return follows_.size();
 }
 
-void MetaModel::append(MetaInfo *mi)
+void Model::doLoad(const MetaInfo& mi)
 {
 	auto size = follows_.size();
 	beginInsertRows(QModelIndex(), size, size);
@@ -198,7 +198,7 @@ void MetaModel::append(MetaInfo *mi)
 }
 
 
-void MetaModel::update(MetaInfo *mi)
+void Model::doUpdate(const MetaInfo& mi)
 {
 	QList<int> roles = {
 		TitleRole,
@@ -212,21 +212,22 @@ void MetaModel::update(MetaInfo *mi)
 		LiveRole,
 		StartTimeRole
 	};
-	auto it = std::find_if(follows_.begin(), follows_.end(), [mi](auto it) {
-		return it->type == mi->type && it->rid == mi->rid;
+	auto it = std::find_if(follows_.begin(), follows_.end(), [mi](auto& it) {
+		return it.type == mi.type && it.rid == mi.rid;
 	});
 	if (it == follows_.end()) {
-		mi->follow = true;
 		follows_.append(mi);
+		follows_.last().follow = true;
 		auto idx = createIndex(follows_.size() - 1, 0);
 		emit dataChanged(idx, idx, roles);
 	} else {
-		auto id = (*it)->id;
+		auto id = it->id;
 		*it = mi;
-		(*it)->id = id;
-		(*it)->lastUpdate = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+		it->id = id;
+		it->lastUpdate = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+		qDebug() << "last update:" << it->lastUpdate;
 		auto idx = createIndex(std::distance(follows_.begin(), it), 0);
 		emit dataChanged(idx, idx, roles);
 	}
-	qDebug() << "update rid:" << mi->rid << ", type:" << mi->type;
+	qDebug() << "update rid:" << mi.rid << ", type:" << mi.type;
 }

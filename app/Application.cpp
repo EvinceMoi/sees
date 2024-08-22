@@ -8,7 +8,7 @@
 #include "MpvProps.h"
 
 #include "Source.h"
-#include "Types.h"
+// #include "Types.h"
 
 Application::Application(int argc, char* argv[])
 	: QGuiApplication(argc, argv)
@@ -30,8 +30,8 @@ void Application::init()
 	qmlRegisterType<MpvPlayer>("MpvPlayer", 1, 0, "MpvPlayer");
 	qmlRegisterSingletonInstance("MpvPlayer", 1, 0, "MpvProps", MpvProps::self());
 
-	qmlRegisterType<MediaInfo>("Source", 1, 0, "MediaInfo");
-	qmlRegisterType<MetaInfo>("Source", 1, 0, "MetaInfo");
+	// qmlRegisterType<MediaInfo>("Source", 1, 0, "MediaInfo");
+	// qmlRegisterType<MetaInfo>("Source", 1, 0, "MetaInfo");
 	qmlRegisterSingletonInstance("Source", 1, 0, "Source", Source::self());
 
 	qmlengine_->load(QUrl(QStringLiteral("qrc:/qt/qml/ui/MainWindow.qml")));

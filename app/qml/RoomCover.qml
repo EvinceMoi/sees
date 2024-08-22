@@ -45,9 +45,11 @@ Item {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: {
-
-                    // Source.getMetaInfo(root.type, root.rid)
+                acceptedButtons: Qt.LeftButton | Qt.RightButton
+                onClicked: function (event) {
+                    if (event.button === Qt.RightButton) {
+                        Source.getMetaInfo(root.type, root.rid)
+                    }
                 }
                 onDoubleClicked: {
                     Source.getMediaInfo(root.type, root.rid)
