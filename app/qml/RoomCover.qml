@@ -4,11 +4,15 @@ import Source
 Item {
     id: root
 
+    required property string type
+    required property string rid
     required property string snapshot
     required property string nick
     required property string avatar
     required property string title
     required property string heat
+    required property string category
+    required property bool fav
 
     signal clicked
     signal followed
@@ -42,8 +46,11 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 onClicked: {
-                    Source.getMetaInfo("douyu", "1870001")
-                    // Source.getMediaInfo("douyu", "1870001")
+
+                    // Source.getMetaInfo(root.type, root.rid)
+                }
+                onDoubleClicked: {
+                    Source.getMediaInfo(root.type, root.rid)
                 }
             }
 

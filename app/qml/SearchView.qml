@@ -73,34 +73,6 @@ Item {
                 title: "《大Mu的随缘直播间》"
                 heat: "89.2万"
             }
-            ListElement {
-                img: "https://rpic.douyucdn.cn/asrpic/240808/1870001_src_1706.avif/dy1"
-                nick: "大Mu金仙丶"
-                avatar: "https://apic.douyucdn.cn/upload/avatar_v3/202207/f6c31f8d33314b6795e2b8334c845317_middle.jpg"
-                title: "《大Mu的随缘直播间》"
-                heat: "89.2万"
-            }
-            ListElement {
-                img: "https://rpic.douyucdn.cn/asrpic/240808/1870001_src_1706.avif/dy1"
-                nick: "大Mu金仙丶"
-                avatar: "https://apic.douyucdn.cn/upload/avatar_v3/202207/f6c31f8d33314b6795e2b8334c845317_middle.jpg"
-                title: "《大Mu的随缘直播间》"
-                heat: "89.2万"
-            }
-            ListElement {
-                img: "https://rpic.douyucdn.cn/asrpic/240808/1870001_src_1706.avif/dy1"
-                nick: "大Mu金仙丶"
-                avatar: "https://apic.douyucdn.cn/upload/avatar_v3/202207/f6c31f8d33314b6795e2b8334c845317_middle.jpg"
-                title: "《大Mu的随缘直播间》《大Mu的随缘直播间"
-                heat: "89.2万"
-            }
-            ListElement {
-                img: "https://rpic.douyucdn.cn/asrpic/240808/1870001_src_1706.avif/dy1"
-                nick: "大Mu金仙丶"
-                avatar: "https://apic.douyucdn.cn/upload/avatar_v3/202207/f6c31f8d33314b6795e2b8334c845317_middle.jpg"
-                title: "《大Mu的随缘直播间》"
-                heat: "89.2万"
-            }
         }
 
         GridView {

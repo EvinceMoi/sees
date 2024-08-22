@@ -35,26 +35,28 @@ public:
 	QString rid;
 	Q_PROPERTY(QString type MEMBER type CONSTANT)
 	QString type;
-	Q_PROPERTY(QString title MEMBER title CONSTANT)
+	Q_PROPERTY(QString title MEMBER title NOTIFY titleChanged)
 	QString title;
-	Q_PROPERTY(QString nick MEMBER nick CONSTANT)
+	Q_PROPERTY(QString nick MEMBER nick NOTIFY nickChanged)
 	QString nick;
-	Q_PROPERTY(QString avatar MEMBER avatar CONSTANT)
+	Q_PROPERTY(QString avatar MEMBER avatar NOTIFY avatarChanged)
 	QString avatar;
-	Q_PROPERTY(QString snapshot MEMBER snapshot CONSTANT)
+	Q_PROPERTY(QString snapshot MEMBER snapshot NOTIFY snapshotChanged)
 	QString snapshot;
-	Q_PROPERTY(QString category MEMBER category CONSTANT)
+	Q_PROPERTY(QString category MEMBER category NOTIFY categoryChanged)
 	QString category;
-	Q_PROPERTY(bool follow MEMBER follow CONSTANT)
+	Q_PROPERTY(bool follow MEMBER follow NOTIFY followChanged)
 	bool follow;
-	Q_PROPERTY(bool fav MEMBER fav CONSTANT)
+	Q_PROPERTY(bool fav MEMBER fav NOTIFY favChanged)
 	bool fav;
-	Q_PROPERTY(QString heat MEMBER heat CONSTANT)
+	Q_PROPERTY(QString heat MEMBER heat NOTIFY heatChanged)
 	QString heat;
-	Q_PROPERTY(bool live MEMBER live CONSTANT)
+	Q_PROPERTY(bool live MEMBER live NOTIFY liveChanged)
 	bool live;
 	Q_PROPERTY(qint64 startTime MEMBER startTime CONSTANT)
 	qint64 startTime;
+	Q_PROPERTY(QString lastUpdate MEMBER lastUpdate CONSTANT)
+	QString lastUpdate;
 
 	explicit MetaInfo(QObject* parent = nullptr)
 		: QObject(parent)
@@ -62,6 +64,18 @@ public:
 	{
 
 	}
+
+
+signals:
+	void titleChanged();
+	void nickChanged();
+	void avatarChanged();
+	void snapshotChanged();
+	void categoryChanged();
+	void followChanged();
+	void favChanged();
+	void heatChanged();
+	void liveChanged();
 };
 
 class MediaInfo : public QObject

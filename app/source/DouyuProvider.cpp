@@ -123,7 +123,7 @@ void DouyuProvider::processMedia(const QString& rid, const QByteArray& data)
 
 	auto sign = engine.evaluate(QString("%1; sign('%2', '%3', '%4')").arg(ret).arg(rid).arg(did).arg(ns)).toString();
 
-	auto params = QString("%1&cdn=ws-h5&rate=-1").arg(sign);
+	auto params = QString("%1&cdn=ws-h5&rate=0").arg(sign);
 
 	QNetworkRequest req;
 	req.setUrl(QUrl(QString("https://www.douyu.com/lapi/live/getH5Play/%1").arg(rid)));

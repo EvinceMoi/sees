@@ -1,6 +1,5 @@
 #include "Source.h"
 
-#include <algorithm>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 
@@ -47,36 +46,15 @@ void Source::registerProviders()
 			model_.updateFollow(mi);
 		});
 		connect(sp.get(), &SourceProvider::gotMedia, [this](MediaInfo* mi){
-			emit play(mi);
+			emit mediaInfoFetched(mi);
 		});
 	}
 }
 
 void Source::loadData()
 {
-	// connect(&model_, &Model::followLoaded, [](MetaInfo* mi) {
-
-	// });
-
 	model_.loadFollows();
 }
-
-// void Source::roomUpsert(MetaInfo *mi)
-// {
-// 	auto it = std::find_if(rooms_.begin(), rooms_.end(), [mi](auto it){
-// 		return it->rid == mi->rid && it->type == mi->type;
-// 	});
-// 	if (it == rooms_.end()) {
-// 		// insert
-// 		rooms_.append(mi);
-// 	} else {
-// 		// update
-// 		auto old = *it;
-// 		*it = mi;
-// 		old->deleteLater();
-// 	}
-// }
-
 
 void Source::getMetaInfo(const QString& type, const QString& ref)
 {
@@ -94,8 +72,13 @@ void Source::getMediaInfo(const QString& type, const QString& ref)
 	sp->fetchMedia(ref);
 }
 
-QList<MetaInfo*> Source::follows()
+MetaModel* Source::follows()
 {
 	qDebug() << "call follows";
 	return model_.data();
+}
+
+void Source::refresh(int gap)
+{
+	gap = std::max(0, gap);
 }

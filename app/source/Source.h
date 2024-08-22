@@ -8,7 +8,7 @@
 class MetaInfo;
 class MediaInfo;
 class SourceProvider;
-// class Model;
+class MetaModel;
 
 class Source : public QObject
 {
@@ -22,16 +22,17 @@ public:
 	Q_INVOKABLE void getMetaInfo(const QString& type, const QString& ref); // ("douyu", "roomid / url")
 	Q_INVOKABLE void getMediaInfo(const QString& type, const QString& ref);
 
-	Q_INVOKABLE QList<MetaInfo*> follows();
+	Q_INVOKABLE MetaModel* follows();
+
+	Q_INVOKABLE void refresh(int gap);
 
 signals:
-	void play(MediaInfo* mi);
+	void mediaInfoFetched(MediaInfo* mi);
 
 
 private:
 	void registerProviders();
 	void loadData();
-	// void roomUpsert(MetaInfo *);
 
 private:
 	using SourceProviderPtr = std::shared_ptr<SourceProvider>;
@@ -39,8 +40,6 @@ private:
 	std::unordered_map<QString, SourceProviderPtr> mmatch_;
 
 	static std::once_flag once_flag_;
-
-	// QList<MetaInfo *> rooms_;
 
 	Model model_;
 };
