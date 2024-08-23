@@ -34,7 +34,8 @@ ApplicationWindow {
         repeat: true
         triggeredOnStart: true
         onTriggered: {
-            Source.refresh(refreshTimeout)
+
+            // Source.refresh(refreshTimeout)
         }
     }
 

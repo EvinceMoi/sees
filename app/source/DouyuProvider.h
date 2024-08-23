@@ -14,6 +14,9 @@ public:
 	QString getType() const {
 		return QStringLiteral("douyu");
 	}
+	QString getName() const {
+		return QStringLiteral("斗鱼");
+	}
 	QStringList getMatches() const {
 		return { "www.douyu.com" };
 	}
@@ -21,12 +24,16 @@ public:
 	void fetchMeta(const QString& in);
 	void fetchMedia(const QString& in);
 
+	void search(const QString& in);
+
 private:
-	QNetworkRequest genRequest(const QString& rid, bool mobile) const;
+	QNetworkRequest genRequest(const QString& url, const QString& referer = QString()) const;
 
 	std::optional<MetaInfo> processMeta(const QByteArray& data);
 	void processMedia(const QString& rid, const QByteArray& data);
 	void handleMediaInfo(const QString& rid, const QByteArray& data);
+
+	void processSearch(const QByteArray& data);
 
 private:
 	QNetworkAccessManager *nam_;

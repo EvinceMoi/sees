@@ -6,6 +6,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QJsonArray>
 #include <QJSEngine>
 #include "Types.h"
 
@@ -21,24 +22,22 @@ DouyuProvider::~DouyuProvider()
 
 }
 
-QNetworkRequest DouyuProvider::genRequest(const QString& rid, bool mobile) const
+QNetworkRequest DouyuProvider::genRequest(const QString& url, const QString& referer) const
 {
 	QNetworkRequest req;
-	if (rid.isEmpty())
-		return req;
 
-	auto sub = mobile ? QString("m") : QString("www");
-	auto url = QUrl(QString("https://%1.douyu.com/%2").arg(sub).arg(rid));
 	req.setUrl(url);
 	req.setRawHeader(QByteArrayLiteral("User-Agent"), getUserAgent().toUtf8());
-	req.setRawHeader(QByteArrayLiteral("Referer"), QByteArrayLiteral("https://m.douyu.com"));
+	// req.setRawHeader(QByteArrayLiteral("Referer"), QByteArrayLiteral("https://m.douyu.com"));
+	req.setRawHeader(QByteArrayLiteral("Referer"), referer.toUtf8());
 
 	return req;
 }
 
 void DouyuProvider::fetchMeta(const QString& rid)
 {
-	auto req = genRequest(rid, true);
+	// auto req = genRequest(rid, true);
+	auto req = genRequest(QString("https://m.douyu.com/%1").arg(rid), "https://m.douyu.com");
 	auto reply = nam_->get(req);
 	connect(reply, &QNetworkReply::finished, [this, reply](){
 		auto data = reply->readAll();
@@ -55,7 +54,7 @@ void DouyuProvider::fetchMeta(const QString& rid)
 
 void DouyuProvider::fetchMedia(const QString& rid)
 {
-	auto req = genRequest(rid, false);
+	auto req = genRequest(QString("https://www.douyu.com/%1").arg(rid), "https://www.douyu.com");
 	auto reply = nam_->get(req);
 	connect(reply, &QNetworkReply::finished, [this, rid, reply](){
 		auto data = reply->readAll();
@@ -68,6 +67,20 @@ void DouyuProvider::fetchMedia(const QString& rid)
 	});
 }
 
+void DouyuProvider::search(const QString &in)
+{
+	auto req = genRequest(QString("https://www.douyu.com/japi/search/api/searchShow?kw=%1&page=1&pageSize=20").arg(in));
+	auto reply = nam_->get(req);
+	connect(reply, &QNetworkReply::finished, [this, reply]() {
+		auto data = reply->readAll();
+		processSearch(data);
+		reply->deleteLater();
+	});
+	connect(reply, &QNetworkReply::errorOccurred, [reply](QNetworkReply::NetworkError code) {
+		reply->deleteLater();
+	});
+}
+
 std::optional<MetaInfo> DouyuProvider::processMeta(const QByteArray& data)
 {
 	static QRegularExpression re(R"(<script id="vike_pageContext" type="application/json">(.*)</script>)");
@@ -76,11 +89,9 @@ std::optional<MetaInfo> DouyuProvider::processMeta(const QByteArray& data)
 	if (!matches.hasMatch()) return {};
 
 	auto props = matches.captured(1);
-	// qDebug() << props;
 	auto doc = QJsonDocument::fromJson(props.toUtf8());
 	if (doc.isNull()) return {};
 	auto ri = doc["pageProps"]["room"]["roomInfo"]["roomInfo"];
-	qDebug() << ri;
 	if (!ri.isObject()) return {};
 
 	MetaInfo mi;
@@ -156,6 +167,37 @@ void DouyuProvider::handleMediaInfo(const QString &rid, const QByteArray &data)
 
 	auto url_live = url + "/" + live;
 	MediaInfo mi;
+	mi.type = "douyu";
 	mi.video = url_live;
 	emit gotMedia(mi);
+}
+
+void DouyuProvider::processSearch(const QByteArray &data)
+{
+	auto doc = QJsonDocument::fromJson(data);
+	if (doc.isNull()) return;
+
+	if (doc["error"].toInt(-1) != 0) return;
+	auto lst = doc["data"]["relateShow"];
+	if (!lst.isArray()) return;
+
+	QList<MetaInfo> ret;
+
+	auto arr = lst.toArray();
+	for (auto it : arr) {
+		auto obj = it.toObject();
+		MetaInfo mi;
+		mi.rid = QString::number(obj["rid"].toInt());
+		mi.type = "douyu";
+		mi.title = obj["roomName"].toString();
+		mi.nick = obj["nickName"].toString();
+		mi.avatar = obj["avatar"].toString();
+		mi.snapshot = obj["roomSrc"].toString();
+		mi.category = obj["cateName"].toString();
+		mi.heat = obj["hot"].toString();
+		mi.live = obj["isLive"].toInt() == 1;
+		ret.append(mi);
+	}
+
+	emit searchResult(ret);
 }

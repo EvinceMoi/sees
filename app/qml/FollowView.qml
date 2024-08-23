@@ -9,50 +9,14 @@ Item {
         rightMargin: 10
     }
     // top
-    Item {
-        id: top
-
-        readonly property real topHeight: 36
-
-        height: topHeight
-        width: parent.width
+    SearchBox {
+        id: search
         anchors {
             top: parent.top
-            left: parent.left
+            horizontalCenter: parent.horizontalCenter
         }
-
-        TextInput {
-            id: input
-            anchors {
-                right: search_btn.left
-                left: parent.left
-                verticalCenter: parent.verticalCenter
-            }
-            color: "snow"
-            font.pointSize: 11
-            padding: 10
-            maximumLength: 30
-            // disable input when searching ongoing
-        }
-
-        IconButton {
-            id: search_btn
-            anchors {
-                verticalCenter: parent.verticalCenter
-                right: parent.right
-            }
-            size: parent.topHeight * 0.6
-            icon: Icons.search
-        }
-
-        // border
-        Rectangle {
-            width: parent.width
-            height: 1
-            anchors.bottom: parent.bottom
-            anchors.left: parent.left
-            color: "black"
-        }
+        height: 36
+        width: parent.width
     }
 
     // bottom
@@ -61,7 +25,7 @@ Item {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
 
-        height: parent.height - top.height
+        height: parent.height - search.height
         width: parent.width
 
         GridView {

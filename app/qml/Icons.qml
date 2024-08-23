@@ -7,6 +7,7 @@ QtObject {
 
     readonly property string settings: ''
     readonly property string search: ''
+    readonly property string clear: ''
     readonly property string fav: ''
     readonly property string like: ''
     readonly property string dislike: '♥'

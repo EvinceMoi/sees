@@ -15,14 +15,18 @@ public:
 	virtual ~SourceProvider();
 
 	virtual QString getType() const = 0;
+	virtual QString getName() const = 0;
 	virtual QStringList getMatches() const = 0;
 
 	virtual void fetchMeta(const QString& in) = 0;
 	virtual void fetchMedia(const QString& in) = 0;
 
+	virtual void search(const QString& in) = 0;
+
 signals:
 	void gotMeta(const MetaInfo& mi);
 	void gotMedia(const MediaInfo& mi);
+	void searchResult(const QList<MetaInfo>&);
 
 
 protected:
