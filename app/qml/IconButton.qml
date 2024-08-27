@@ -5,7 +5,10 @@ Item {
 
     signal clicked
     property real size: 32
+    property bool highlight: false
+    property bool round: false
     required property string icon
+    property bool hovered: hover.hovered
 
     width: size
     height: size
@@ -21,14 +24,14 @@ Item {
     Rectangle {
         id: bg
         anchors.fill: parent
-        radius: 2
-        color: hover.hovered ? "darkgray" : "transparent"
+        radius: round ? root.size / 2 : 2
+        color: (hover.hovered || highlight) ? "darkgray" : "transparent"
 
         Text {
             anchors.centerIn: parent
             text: root.icon
             font.family: Fonts.icons
-            font.pointSize: root.size * 0.54
+            fontSizeMode: Text.Fit
             color: '#f0f0f0'
         }
     }

@@ -47,23 +47,43 @@ Source* Source::self()
 	return &s;
 }
 
+void Source::follow(const QString &type, const QString &rid, bool f)
+{
+	if (!f) {
+		followModel_->remove(type, rid);
+		dbRemoveFollow(type, rid);
+		return;
+	}
+	MetaInfo mi;
+	mi.type = type;
+	mi.rid = rid;
+	if (dbSaveFollow(mi))
+		fetchMeta(type, rid);
+}
+
+void Source::fav(const QString &type, const QString &rid, bool f)
+{
+	dbSetFav(type, rid, f);
+	followModel_->update(type, rid, [&](MetaInfo& mi){
+		mi.fav = f;
+	});
+}
+
 void Source::registerProviders()
 {
 	{
 		// douyu
 		auto it = std::make_shared<DouyuProvider>();
 		mtype_.insert({it->getType(), it});
+		mname_.insert({it->getName(), it});
 		for (auto &m : it->getMatches()) {
 			mmatch_.insert({m, it});
 		}
 	}
 
 	for (auto &[k, sp]: mtype_) {
-		connect(sp.get(), &SourceProvider::gotMeta, [this](const MetaInfo& mi){
-			// got meta
-			updateFollow(mi);
-		});
-		connect(sp.get(), &SourceProvider::gotMedia, [this](const MediaInfo& mi){
+		connect(sp.get(), &SourceProvider::gotMeta, this, &Source::onMeta);
+		connect(sp.get(), &SourceProvider::gotMedia, [this](const MediaInfo& mi) {
 			emit mediaInfoFetched(mi.video, mi.audio, mi.subtitle);
 		});
 		connect(sp.get(), &SourceProvider::searchResult, [this](const QList<MetaInfo>& s) {
@@ -123,7 +143,7 @@ void Source::loadFollows()
 		QString nick = query.value(idx_nick).toString();
 		QString avatar = query.value(idx_avatar).toString();
 		QString category = query.value(idx_category).toString();
-		bool fav = query.value(idx_fav).toBool();
+		bool fav = query.value(idx_fav).toInt() == 1;
 		QString title = query.value(idx_title).toString();
 		QString snapshot = query.value(idx_snapshot).toString();
 		QString last_update = query.value(idx_last_update).toString();
@@ -146,48 +166,6 @@ void Source::loadFollows()
 	}
 }
 
-void Source::updateFollow(const MetaInfo &mi)
-{
-	// db
-	QSqlQuery query;
-	query.prepare("insert into follows (type, rid, nick, avatar, category, title, snapshot) "
-				  "values (:type, :rid, :nick, :avatar, :catetory, :title, :snapshot) "
-				  "on conflict(type, rid) "
-				  "do update set nick = :nick, avatar = :avatar, category = :category, fav = :fav, "
-				  "title = :title, snapshot = :snapshot, lastUpdate = CURRENT_TIMESTAMP");
-	query.bindValue(":type", mi.type);
-	query.bindValue(":rid", mi.rid);
-	query.bindValue(":nick", mi.nick);
-	query.bindValue(":avatar", mi.avatar);
-	query.bindValue(":category", mi.category);
-	query.bindValue(":title", mi.title);
-	query.bindValue(":snapshot", mi.snapshot);
-	bool ok = query.exec();
-	if (!ok) {
-		qDebug() << "failed to update follow, type:" << mi.type << ", rid:" << mi.rid << ", nick:" << mi.nick;
-		qDebug() << query.lastError().text();
-		return;
-	}
-
-	// mem
-	{
-		auto it = std::find_if(follows_.begin(), follows_.end(), [mi](auto& it) {
-			return it.type == mi.type && it.rid == mi.rid;
-		});
-		if (it == follows_.end()) {
-			follows_.append(mi);
-			follows_.last().follow = true;
-			followModel_->changeAtIndex(follows_.size() - 1);
-		} else {
-			auto idx = std::distance(follows_.begin(), it);
-			auto id = it->id;
-			*it = mi;
-			it->id = id;
-			it->lastUpdate = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
-			followModel_->changeAtIndex(idx);
-		}
-	}
-}
 
 void Source::refreshOutdated(int duration)
 {
@@ -198,7 +176,7 @@ void Source::refreshOutdated(int duration)
 		auto type = query.value(0).toString();
 		auto rid = query.value(1).toString();
 		qDebug() << "refresh" << type << ">" << rid;
-		getMetaInfo(type, rid);
+		fetchMeta(type, rid);
 	}
 }
 
@@ -209,7 +187,7 @@ std::optional<Source::SourceProviderPtr> Source::getProvider(const QString &type
 	return mtype_[type];
 }
 
-void Source::getMetaInfo(const QString& type, const QString& ref)
+void Source::fetchMeta(const QString& type, const QString& ref)
 {
 	if (!mtype_.contains(type)) return;
 
@@ -217,7 +195,7 @@ void Source::getMetaInfo(const QString& type, const QString& ref)
 	sp->fetchMeta(ref);
 }
 
-void Source::getMediaInfo(const QString& type, const QString& ref)
+void Source::fetchMedia(const QString& type, const QString& ref)
 {
 	if (!mtype_.contains(type)) return;
 
@@ -225,9 +203,14 @@ void Source::getMediaInfo(const QString& type, const QString& ref)
 	sp->fetchMedia(ref);
 }
 
-MetaModel* Source::follows()
+MetaModel* Source::followsModel()
 {
 	return followModel_;
+}
+
+MetaModel *Source::searchModel()
+{
+	return searchModel_;
 }
 
 void Source::refresh(int gap)
@@ -240,5 +223,119 @@ void Source::search(const QString &type, const QString &kw)
 	getProvider(type).and_then([kw](auto sp) -> std::optional<SourceProviderPtr> {
 		sp->search(kw);
 		return sp;
+	});
+}
+
+bool Source::dbSaveFollow(const MetaInfo &mi)
+{
+	qDebug() << mi.fav;
+	// db
+	QSqlQuery query;
+	query.prepare("insert into follows (type, rid, nick, avatar, category, title, snapshot, fav) "
+				  "values (:type, :rid, :nick, :avatar, :catetory, :title, :snapshot, :fav) "
+				  "on conflict(type, rid) "
+				  "do update set nick = :nick, avatar = :avatar, category = :category, fav = :fav, "
+				  "title = :title, snapshot = :snapshot, lastUpdate = CURRENT_TIMESTAMP");
+	query.bindValue(":type", mi.type);
+	query.bindValue(":rid", mi.rid);
+	query.bindValue(":nick", mi.nick);
+	query.bindValue(":avatar", mi.avatar);
+	query.bindValue(":category", mi.category);
+	query.bindValue(":title", mi.title);
+	query.bindValue(":snapshot", mi.snapshot);
+	query.bindValue(":fav", mi.fav ? 1 : 0);
+	bool ok = query.exec();
+	if (!ok) {
+		qDebug() << "failed to update follow, type:" << mi.type << ", rid:" << mi.rid << ", nick:" << mi.nick;
+		qDebug() << query.lastError().text();
+		return false;
+	}
+	return true;
+}
+
+bool Source::dbRemoveFollow(const QString &type, const QString &rid)
+{
+	QSqlQuery query;
+	query.prepare("delete from follows where type = :type and rid = :rid");
+	query.bindValue(":type", type);
+	query.bindValue(":rid", rid);
+	bool ok = query.exec();
+	if (!ok) {
+		qDebug() << "failed to remove follow: type:" << type << ", rid:" << rid;
+		return false;
+	}
+	return true;
+}
+
+bool Source::dbSetFav(const QString &type, const QString &rid, bool f)
+{
+	QSqlQuery query;
+	query.prepare("update follows set fav = :fav where type = :type and rid = :rid");
+	query.bindValue(":type", type);
+	query.bindValue(":rid", rid);
+	query.bindValue(":fav", f ? 1 : 0);
+	bool ok = query.exec();
+	if (!ok) {
+		qDebug() << "failed to update follow fav: type:" << type << ", rid:" << rid;
+		return false;
+	}
+	return true;
+}
+
+std::optional<MetaInfo> Source::dbGetFollow(const QString &type, const QString &rid)
+{
+	QSqlQuery query;
+	query.prepare("select * from follows where type = :type and rid = :rid");
+	query.bindValue(":type", type);
+	query.bindValue(":rid", rid);
+	bool ok = query.exec();
+	if (!ok) {
+		qDebug() << "failed to get type:" << type << ", rid:" << rid;
+		return {};
+	}
+	if (query.next()) {
+		quint64 id = query.value("id").toULongLong();
+		QString type = query.value("type").toString();
+		QString rid = query.value("rid").toString();
+		QString nick = query.value("nick").toString();
+		QString avatar = query.value("avatar").toString();
+		QString category = query.value("category").toString();
+		bool fav = query.value("fav").toInt() == 1;
+		QString title = query.value("title").toString();
+		QString snapshot = query.value("snapshot").toString();
+		QString last_update = query.value("lastUpdate").toString();
+
+		MetaInfo mi;
+		mi.id = id;
+		mi.type = type;
+		mi.rid = rid;
+		mi.nick = nick;
+		mi.avatar = avatar;
+		mi.category = category;
+		mi.follow = true;
+		mi.fav = fav;
+		mi.title = title;
+		mi.snapshot = snapshot;
+		mi.lastUpdate = last_update;
+		return mi;
+	} else {
+		return {};
+	}
+}
+
+void Source::onMeta(const MetaInfo &mi)
+{
+	// save to db
+	bool ok = dbSaveFollow(mi);
+	if (!ok)
+		return;
+
+	// load from db and update mem
+	dbGetFollow(mi.type, mi.rid).and_then([this, mi](MetaInfo m) {
+		m.live = mi.live;
+		m.heat = mi.heat;
+		m.startTime = mi.startTime;
+		followModel_->update(m);
+		return std::optional<MetaInfo>(m);
 	});
 }

@@ -1,5 +1,6 @@
 #include "Model.h"
 #include <QModelIndex>
+#include <QDateTime>
 #include <QDebug>
 
 #include "Types.h"
@@ -89,37 +90,42 @@ void MetaModel::reset()
 	endResetModel();
 }
 
+void MetaModel::update(const MetaInfo &mi)
+{
+	auto it = std::find_if(source_.begin(), source_.end(), [mi](auto& it) {
+		return it.type == mi.type && it.rid == mi.rid;
+	});
+	if (it == source_.end()) {
+		auto size = source_.size();
+		beginInsertRows(QModelIndex(), size, size);
+		source_.append(mi);
+		endInsertRows();
+	} else {
+		auto idx = std::distance(source_.begin(), it);
+		*it = mi;
+		changeAtIndex(idx);
+	}
+}
 
-// void Model::doUpdate(const MetaInfo& mi)
-// {
-// 	QList<int> roles = {
-// 		TitleRole,
-// 		NickRole,
-// 		AvatarRole,
-// 		SnapshotRole,
-// 		CategoryRole,
-// 		FollowRole,
-// 		FavRole,
-// 		HeatRole,
-// 		LiveRole,
-// 		StartTimeRole
-// 	};
-// 	auto it = std::find_if(follows_.begin(), follows_.end(), [mi](auto& it) {
-// 		return it.type == mi.type && it.rid == mi.rid;
-// 	});
-// 	if (it == follows_.end()) {
-// 		follows_.append(mi);
-// 		follows_.last().follow = true;
-// 		auto idx = createIndex(follows_.size() - 1, 0);
-// 		emit dataChanged(idx, idx, roles);
-// 	} else {
-// 		auto id = it->id;
-// 		*it = mi;
-// 		it->id = id;
-// 		it->lastUpdate = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
-// 		qDebug() << "last update:" << it->lastUpdate;
-// 		auto idx = createIndex(std::distance(follows_.begin(), it), 0);
-// 		emit dataChanged(idx, idx, roles);
-// 	}
-// 	qDebug() << "update rid:" << mi.rid << ", type:" << mi.type;
-// }
+bool MetaModel::update(const QString &type, const QString &rid, Updater &&up)
+{
+	auto it = std::find_if(source_.begin(), source_.end(), [type, rid](auto& it) {
+		return it.type == type && it.rid == rid;
+	});
+	if (it == source_.end())
+		return false;
+
+	auto idx = std::distance(source_.begin(), it);
+	up(*it);
+	changeAtIndex(idx);
+	return true;
+}
+
+void MetaModel::remove(const QString &type, const QString &rid)
+{
+	beginResetModel();
+	source_.erase(std::remove_if(source_.begin(), source_.end(), [type, rid](auto mi){
+		return type == mi.type && rid == mi.rid;
+	}), source_.end());
+	endResetModel();
+}

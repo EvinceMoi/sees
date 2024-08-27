@@ -28,7 +28,6 @@ QNetworkRequest DouyuProvider::genRequest(const QString& url, const QString& ref
 
 	req.setUrl(url);
 	req.setRawHeader(QByteArrayLiteral("User-Agent"), getUserAgent().toUtf8());
-	// req.setRawHeader(QByteArrayLiteral("Referer"), QByteArrayLiteral("https://m.douyu.com"));
 	req.setRawHeader(QByteArrayLiteral("Referer"), referer.toUtf8());
 
 	return req;
@@ -36,7 +35,6 @@ QNetworkRequest DouyuProvider::genRequest(const QString& url, const QString& ref
 
 void DouyuProvider::fetchMeta(const QString& rid)
 {
-	// auto req = genRequest(rid, true);
 	auto req = genRequest(QString("https://m.douyu.com/%1").arg(rid), "https://m.douyu.com");
 	auto reply = nam_->get(req);
 	connect(reply, &QNetworkReply::finished, [this, reply](){

@@ -8,8 +8,8 @@ Item {
         leftMargin: 10
         rightMargin: 10
     }
+
     // top
-    // TODO: connect search
     SearchBox {
         id: search
         anchors {
@@ -19,7 +19,7 @@ Item {
         height: 32
         width: parent.width
         onSearch: function (text) {
-            console.log('FollowView search:', text)
+            Source.search("douyu", text)
         }
     }
 
@@ -35,53 +35,42 @@ Item {
         GridView {
             id: gv
 
+            readonly property real w: parent.width / 3
+            readonly property real h: w * 0.7
+
             anchors.fill: parent
-            cellWidth: parent.width / 3
-            cellHeight: cellWidth * 0.7
+            cellWidth: w
+            cellHeight: h
             clip: true
 
-            model: Source.followsModel()
+            model: Source.searchModel()
             delegate: RoomCover {
                 id: rc
-                width: gv.cellWidth
-                height: gv.cellHeight
+                width: gv.w
+                height: gv.h
 
-                property real iconSize: Math.max(width * 0.12, 14)
+                property real iconSize: width * 0.16
 
                 ColumnLayout {
-                    visible: rc.hovered || follow.hovered || fav.hovered
-                    height: parent.height
-                    width: height * 0.2
+                    visible: rc.hovered || b1.hovered
+                    height: parent.height - 4
+                    width: rc.iconSize + 4
                     anchors.right: parent.right
                     anchors.top: parent.top
                     anchors.margins: 2
 
                     IconButton {
-                        id: follow
-                        size: parent.width - 4
-                        icon: Icons.unfollow
-                        round: true
-                        visible: !rc.fav
-
-                        Layout.alignment: Qt.AlignHCenter
-
-                        onClicked: {
-                            Source.follow(rc.type, rc.rid, false)
-                        }
-                    }
-                    IconButton {
-                        id: fav
-                        size: parent.width - 4
-                        icon: rc.fav ? Icons.like : Icons.dislike
+                        id: b1
+                        size: rc.iconSize
+                        icon: Icons.follow
                         round: true
 
                         Layout.alignment: Qt.AlignHCenter
 
                         onClicked: {
-                            Source.fav(rc.type, rc.rid, !rc.fav)
+                            Source.follow(rc.type, rc.rid, true)
                         }
                     }
-
                     Item {
                         Layout.fillHeight: true
                     }

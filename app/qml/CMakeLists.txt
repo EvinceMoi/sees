@@ -7,8 +7,9 @@ set(qml_files
 	Panel.qml
 	IconButton.qml
 	SearchBox.qml
-	FollowView.qml
 	RoomCover.qml
+	FollowView.qml
+	SearchView.qml
 )
 set(singleton_qml_files
 	Fonts.qml

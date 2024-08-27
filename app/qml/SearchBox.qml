@@ -18,12 +18,16 @@ Item {
             Layout.fillWidth: true
             color: "snow"
             font.pointSize: 11
-            // padding: 10
             maximumLength: 30
 
             Layout.leftMargin: 4
 
             // disable input when searching ongoing
+            onAccepted: {
+                if (input.length > 0) {
+                    root.search(input.text)
+                }
+            }
         }
         IconButton {
             id: clear_btn
@@ -44,6 +48,7 @@ Item {
             icon: Icons.search
 
             Layout.rightMargin: 4
+            Layout.alignment: Qt.AlignVCenter
             Layout.preferredWidth: iconSize
             Layout.minimumWidth: iconSize
 

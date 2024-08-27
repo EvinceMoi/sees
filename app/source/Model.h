@@ -37,6 +37,10 @@ public:
 public:
 	void changeAtIndex(int idx);
 	void reset();
+	void update(const MetaInfo& mi);
+	using Updater = std::function<void(MetaInfo&)>;
+	bool update(const QString& type, const QString& rid, Updater&& up);
+	void remove(const QString& type, const QString& rid);
 
 private:
 	QList<MetaInfo>& source_;

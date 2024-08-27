@@ -17,25 +17,38 @@ public:
 
 	static Source* self();
 
-	Q_INVOKABLE void getMetaInfo(const QString& type, const QString& ref); // ("douyu", "roomid / url")
-	Q_INVOKABLE void getMediaInfo(const QString& type, const QString& ref);
+	Q_INVOKABLE void follow(const QString& type, const QString& rid, bool f);
+	Q_INVOKABLE void fav(const QString& type, const QString& rid, bool f);
 
-	Q_INVOKABLE MetaModel* follows();
+	Q_INVOKABLE void fetchMeta(const QString& type, const QString& ref); // ("douyu", "roomid / url")
+	Q_INVOKABLE void fetchMedia(const QString& type, const QString& ref);
+
+	Q_INVOKABLE MetaModel* followsModel();
+	Q_INVOKABLE MetaModel* searchModel();
 
 	Q_INVOKABLE void refresh(int gap);
 
 	Q_INVOKABLE void search(const QString& type, const QString& kw);
 
+public:
+	bool dbSaveFollow(const MetaInfo& mi);
+	bool dbRemoveFollow(const QString& type, const QString& rid);
+	bool dbSetFav(const QString& type, const QString& rid, bool f);
+	std::optional<MetaInfo> dbGetFollow(const QString& type, const QString& rid);
+
+	void refreshOutdated(int duration);
+
 signals:
 	void mediaInfoFetched(const QString& video, const QString& audio, const QString& subtitle);
+
+private:
+	void onMeta(const MetaInfo& mi);
 
 private:
 	void registerProviders();
 	void initSchema();
 
 	void loadFollows();
-	void updateFollow(const MetaInfo& mi);
-	void refreshOutdated(int duration);
 
 private:
 	using SourceProviderPtr = std::shared_ptr<SourceProvider>;
@@ -43,6 +56,7 @@ private:
 
 private:
 	std::unordered_map<QString, SourceProviderPtr> mtype_;
+	std::unordered_map<QString, SourceProviderPtr> mname_;
 	std::unordered_map<QString, SourceProviderPtr> mmatch_;
 
 	static std::once_flag once_flag_;

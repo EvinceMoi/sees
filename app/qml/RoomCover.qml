@@ -15,17 +15,18 @@ Item {
     required property bool fav
 
     signal clicked
-    signal followed
     // 关注
-    signal unfollowed
-    signal liked
+    signal follow
+    signal unfollow
     // 特别关注
-    signal unliked
+    signal like
+    signal unlike
+
+    property bool hovered: hover.hovered
 
     Rectangle {
-        width: parent.width - 8
-        height: parent.height - 8
-        anchors.centerIn: parent
+        anchors.fill: parent
+        anchors.margins: 2
 
         color: "transparent"
         border.color: hover.hovered ? "green" : "transparent"
@@ -48,11 +49,12 @@ Item {
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
                 onClicked: function (event) {
                     if (event.button === Qt.RightButton) {
-                        Source.getMetaInfo(root.type, root.rid)
+
+                        // Source.fetchMeta(root.type, root.rid)
                     }
                 }
                 onDoubleClicked: {
-                    Source.getMediaInfo(root.type, root.rid)
+                    Source.fetchMedia(root.type, root.rid)
                 }
             }
 
