@@ -3,29 +3,31 @@
 #include <QList>
 
 #include <QAbstractListModel>
+#include <QSortFilterProxyModel>
 
 class MetaInfo;
+
+enum ModelRoles {
+	IdRole = Qt::UserRole + 1,
+	RidRole,
+	TypeRole,
+	TitleRole,
+	NickRole,
+	AvatarRole,
+	SnapshotRole,
+	CategoryRole,
+	FollowRole,
+	FavRole,
+	HeatRole,
+	LiveRole,
+	StartTimeRole,
+	LastUpdateRole,
+};
 
 class MetaModel : public QAbstractListModel
 {
 	Q_OBJECT
 public:
-	enum ModelRoles {
-		IdRole = Qt::UserRole + 1,
-		RidRole,
-		TypeRole,
-		TitleRole,
-		NickRole,
-		AvatarRole,
-		SnapshotRole,
-		CategoryRole,
-		FollowRole,
-		FavRole,
-		HeatRole,
-		LiveRole,
-		StartTimeRole,
-		LastUpdateRole,
-	};
 	MetaModel(QList<MetaInfo>& source, QObject *parent = 0);
 	~MetaModel();
 
@@ -44,4 +46,23 @@ public:
 
 private:
 	QList<MetaInfo>& source_;
+};
+
+class MetaModelProxy : public QSortFilterProxyModel
+{
+	Q_OBJECT
+public:
+	MetaModelProxy(QObject* parent = 0);
+	~MetaModelProxy();
+
+public:
+	void search(const QString& kw);
+
+public:
+	QHash<int, QByteArray> roleNames() const override;
+	QVariant data(const QModelIndex& idx, int role = Qt::DisplayRole) const override;
+
+protected:
+	bool lessThan(const QModelIndex& left, const QModelIndex& right) const override;
+	bool filterAcceptsRow(int row, const QModelIndex& parent) const override;
 };

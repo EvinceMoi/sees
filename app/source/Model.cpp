@@ -129,3 +129,64 @@ void MetaModel::remove(const QString &type, const QString &rid)
 	}), source_.end());
 	endResetModel();
 }
+
+MetaModelProxy::MetaModelProxy(QObject *parent)
+	: QSortFilterProxyModel(parent)
+{
+	sort(0, Qt::DescendingOrder); // enable sorting
+}
+
+MetaModelProxy::~MetaModelProxy()
+{
+
+}
+
+void MetaModelProxy::search(const QString &kw)
+{
+	setFilterFixedString(kw);
+	invalidateFilter();
+}
+
+QHash<int, QByteArray> MetaModelProxy::roleNames() const
+{
+	return sourceModel()->roleNames();
+}
+
+QVariant MetaModelProxy::data(const QModelIndex &idx, int role) const
+{
+	auto sidx = mapToSource(idx);
+	return sourceModel()->data(sidx, role);
+}
+
+bool MetaModelProxy::lessThan(const QModelIndex &left, const QModelIndex &right) const
+{
+	auto lfav = sourceModel()->data(left, ModelRoles::FavRole).toBool();
+	auto rfav = sourceModel()->data(right, ModelRoles::FavRole).toBool();
+	if (lfav != rfav) {
+		return !lfav;
+	}
+
+	auto llive = sourceModel()->data(left, ModelRoles::LiveRole).toBool();
+	auto rlive = sourceModel()->data(right, ModelRoles::LiveRole).toBool();
+	if (llive != rlive) {
+		return !llive;
+	}
+
+
+	auto lheat = sourceModel()->data(left, ModelRoles::HeatRole).toString();
+	auto rheat = sourceModel()->data(right, ModelRoles::HeatRole).toString();
+	return lheat < rheat;
+}
+
+bool MetaModelProxy::filterAcceptsRow(int row, const QModelIndex &parent) const
+{
+	auto idx = sourceModel()->index(row, 0, parent);
+
+	auto rid = sourceModel()->data(idx, ModelRoles::RidRole).toString();
+	auto title = sourceModel()->data(idx, ModelRoles::TitleRole).toString();
+	auto nick = sourceModel()->data(idx, ModelRoles::NickRole).toString();
+	auto cate = sourceModel()->data(idx, ModelRoles::CategoryRole).toString();
+
+	auto search = filterRegularExpression();
+	return rid.contains(search) || title.contains(search) || nick.contains(search) || cate.contains(search);
+}

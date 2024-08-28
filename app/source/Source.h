@@ -7,6 +7,7 @@
 
 class SourceProvider;
 class MetaModel;
+class MetaModelProxy;
 
 class Source : public QObject
 {
@@ -23,12 +24,13 @@ public:
 	Q_INVOKABLE void fetchMeta(const QString& type, const QString& ref); // ("douyu", "roomid / url")
 	Q_INVOKABLE void fetchMedia(const QString& type, const QString& ref);
 
-	Q_INVOKABLE MetaModel* followsModel();
+	Q_INVOKABLE MetaModelProxy* followsModel();
 	Q_INVOKABLE MetaModel* searchModel();
 
 	Q_INVOKABLE void refresh(int gap);
 
 	Q_INVOKABLE void search(const QString& type, const QString& kw);
+	Q_INVOKABLE void filterFollows(const QString& kw);
 
 public:
 	bool dbSaveFollow(const MetaInfo& mi);
@@ -65,5 +67,7 @@ private:
 	QList<MetaInfo> search_;
 
 	MetaModel* followModel_;
+	MetaModelProxy* followProxyModel_;
+
 	MetaModel* searchModel_;
 };

@@ -18,8 +18,8 @@ Item {
         }
         height: 32
         width: parent.width
-        onSearch: function (text) {
-            console.log('FollowView search:', text)
+        onTextChanged: function (text) {
+            Source.filterFollows(text)
         }
     }
 

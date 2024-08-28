@@ -19,8 +19,11 @@ std::once_flag Source::once_flag_;
 Source::Source(QObject* parent)
 	: QObject(parent)
 	, followModel_(new MetaModel(follows_, this))
+	, followProxyModel_(new MetaModelProxy(this))
 	, searchModel_(new MetaModel(search_, this))
 {
+	followProxyModel_->setSourceModel(followModel_);
+
 	auto db = QSqlDatabase::addDatabase("QSQLITE");
 	QString path = QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation)[0];
 	QDir().mkpath(path);
@@ -51,6 +54,7 @@ void Source::follow(const QString &type, const QString &rid, bool f)
 {
 	if (!f) {
 		followModel_->remove(type, rid);
+		followProxyModel_->invalidate();
 		dbRemoveFollow(type, rid);
 		return;
 	}
@@ -67,6 +71,7 @@ void Source::fav(const QString &type, const QString &rid, bool f)
 	followModel_->update(type, rid, [&](MetaInfo& mi){
 		mi.fav = f;
 	});
+	followProxyModel_->invalidate();
 }
 
 void Source::registerProviders()
@@ -164,6 +169,7 @@ void Source::loadFollows()
 		follows_.append(mi);
 		followModel_->changeAtIndex(follows_.size() - 1);
 	}
+	followProxyModel_->invalidate();
 }
 
 
@@ -203,9 +209,9 @@ void Source::fetchMedia(const QString& type, const QString& ref)
 	sp->fetchMedia(ref);
 }
 
-MetaModel* Source::followsModel()
+MetaModelProxy* Source::followsModel()
 {
-	return followModel_;
+	return followProxyModel_;
 }
 
 MetaModel *Source::searchModel()
@@ -224,6 +230,11 @@ void Source::search(const QString &type, const QString &kw)
 		sp->search(kw);
 		return sp;
 	});
+}
+
+void Source::filterFollows(const QString &kw)
+{
+	followProxyModel_->search(kw);
 }
 
 bool Source::dbSaveFollow(const MetaInfo &mi)
@@ -336,6 +347,7 @@ void Source::onMeta(const MetaInfo &mi)
 		m.heat = mi.heat;
 		m.startTime = mi.startTime;
 		followModel_->update(m);
+		followProxyModel_->invalidate();
 		return std::optional<MetaInfo>(m);
 	});
 }

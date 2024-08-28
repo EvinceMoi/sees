@@ -7,6 +7,7 @@ Item {
     id: root
 
     signal search(string text)
+    signal textChanged(string text)
     property real iconSize: height * 0.6
 
     RowLayout {
@@ -27,6 +28,9 @@ Item {
                 if (input.length > 0) {
                     root.search(input.text)
                 }
+            }
+            onTextChanged: {
+                root.textChanged(input.text)
             }
         }
         IconButton {
