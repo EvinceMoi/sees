@@ -178,6 +178,7 @@ void DouyuProvider::handleMediaInfo(const QString &rid, const QByteArray &data)
 	auto url_live = url + "/" + live;
 	MediaInfo mi;
 	mi.type = "douyu";
+	mi.rid = rid;
 	mi.video = url_live;
 	emit gotMedia(mi);
 }

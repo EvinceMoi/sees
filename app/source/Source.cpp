@@ -2,6 +2,7 @@
 
 #include "Model.h"
 #include "DouyuProvider.h"
+#include "HuyaProvider.h"
 
 #include <QDir>
 #include <QSqlDatabase>
@@ -76,15 +77,11 @@ void Source::fav(const QString &type, const QString &rid, bool f)
 
 void Source::registerProviders()
 {
-	{
-		// douyu
-		auto it = std::make_shared<DouyuProvider>();
+	auto doRegister = [this](auto it) {
 		mtype_.insert({it->getType(), it});
-		mname_.insert({it->getName(), it});
-		for (auto &m : it->getMatches()) {
-			mmatch_.insert({m, it});
-		}
-	}
+	};
+	doRegister(std::make_shared<DouyuProvider>());
+	doRegister(std::make_shared<HuyaProvider>());
 
 	for (auto &[k, sp]: mtype_) {
 		connect(sp.get(), &SourceProvider::gotMeta, this, &Source::onMeta);

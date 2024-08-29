@@ -4,6 +4,7 @@ add_library(source STATIC
 	Model.h Model.cpp
 	SourceProvider.h SourceProvider.cpp
 	DouyuProvider.h DouyuProvider.cpp
+	HuyaProvider.h HuyaProvider.cpp
 )
 
 target_link_libraries(source

@@ -8,7 +8,7 @@ import Source
 ApplicationWindow {
     id: root
     width: 800
-    height: 480
+    height: 450
     visible: true
 
     property int refreshTimeout: 180 // in seconds

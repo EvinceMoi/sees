@@ -58,8 +58,8 @@ private:
 
 private:
 	std::unordered_map<QString, SourceProviderPtr> mtype_;
-	std::unordered_map<QString, SourceProviderPtr> mname_;
-	std::unordered_map<QString, SourceProviderPtr> mmatch_;
+	// std::unordered_map<QString, SourceProviderPtr> mname_;
+	// std::unordered_map<QString, SourceProviderPtr> mmatch_;
 
 	static std::once_flag once_flag_;
 

@@ -19,7 +19,8 @@ Item {
         height: 32
         width: parent.width
         onSearch: function (text) {
-            Source.search("douyu", text)
+            // TODO
+            Source.search("huya", text)
         }
     }
 

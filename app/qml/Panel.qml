@@ -124,7 +124,6 @@ Item {
 
         color: '#262629'
 
-        // layer.enabled: true
         StackLayout {
             id: stack
             anchors.fill: parent
@@ -134,14 +133,11 @@ Item {
 
             SearchView {}
 
-            Rectangle {
-                color: 'blue'
+            Item {// fav
             }
-            Rectangle {
-                color: 'gray'
+            Item {// cate
             }
-            Rectangle {
-                color: 'green'
+            Item {// setting
             }
         }
     }

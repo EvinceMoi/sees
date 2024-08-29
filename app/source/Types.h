@@ -33,8 +33,8 @@ using MetaInfoPtr = std::shared_ptr<MetaInfo>;
 
 struct MediaInfo
 {
-	QString id;
 	QString type;
+	QString rid;
 	QString video;
 	QString audio;
 	QString subtitle;
