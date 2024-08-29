@@ -124,6 +124,7 @@ Item {
 
         color: '#262629'
 
+        // layer.enabled: true
         StackLayout {
             id: stack
             anchors.fill: parent

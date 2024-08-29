@@ -17,7 +17,7 @@ struct MetaInfo
 	QString category;
 	bool follow;
 	bool fav;
-	QString heat;
+	quint64 heat;
 	bool live;
 	qint64 startTime;
 	QString lastUpdate;

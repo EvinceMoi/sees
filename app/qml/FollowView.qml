@@ -9,7 +9,6 @@ Item {
         rightMargin: 10
     }
     // top
-    // TODO: connect search
     SearchBox {
         id: search
         anchors {

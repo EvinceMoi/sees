@@ -173,8 +173,8 @@ bool MetaModelProxy::lessThan(const QModelIndex &left, const QModelIndex &right)
 	}
 
 
-	auto lheat = sourceModel()->data(left, ModelRoles::HeatRole).toString();
-	auto rheat = sourceModel()->data(right, ModelRoles::HeatRole).toString();
+	auto lheat = sourceModel()->data(left, ModelRoles::HeatRole).toULongLong();
+	auto rheat = sourceModel()->data(right, ModelRoles::HeatRole).toULongLong();
 	return lheat < rheat;
 }
 

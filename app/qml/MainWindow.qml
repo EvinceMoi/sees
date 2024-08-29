@@ -32,11 +32,14 @@ ApplicationWindow {
         interval: refreshTimeout * 1000
         running: true
         repeat: true
-        triggeredOnStart: true
+        triggeredOnStart: false
         onTriggered: {
-
-            // Source.refresh(refreshTimeout)
+            Source.refresh(refreshTimeout)
         }
+    }
+
+    Component.onCompleted: {
+        Source.refresh(0)
     }
 
     Connections {
@@ -79,7 +82,6 @@ ApplicationWindow {
 
         dragMargin: 100
         dim: true
-        opacity: 0.6
 
         MouseArea {
             anchors.fill: parent
@@ -90,6 +92,7 @@ ApplicationWindow {
             }
 
             Panel {
+                id: panel
                 anchors.fill: parent
             }
         }

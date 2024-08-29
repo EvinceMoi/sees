@@ -239,13 +239,12 @@ void Source::filterFollows(const QString &kw)
 
 bool Source::dbSaveFollow(const MetaInfo &mi)
 {
-	qDebug() << mi.fav;
 	// db
 	QSqlQuery query;
-	query.prepare("insert into follows (type, rid, nick, avatar, category, title, snapshot, fav) "
-				  "values (:type, :rid, :nick, :avatar, :catetory, :title, :snapshot, :fav) "
+	query.prepare("insert into follows (type, rid, nick, avatar, category, title, snapshot) "
+				  "values (:type, :rid, :nick, :avatar, :catetory, :title, :snapshot) "
 				  "on conflict(type, rid) "
-				  "do update set nick = :nick, avatar = :avatar, category = :category, fav = :fav, "
+				  "do update set nick = :nick, avatar = :avatar, category = :category, "
 				  "title = :title, snapshot = :snapshot, lastUpdate = CURRENT_TIMESTAMP");
 	query.bindValue(":type", mi.type);
 	query.bindValue(":rid", mi.rid);
@@ -254,7 +253,6 @@ bool Source::dbSaveFollow(const MetaInfo &mi)
 	query.bindValue(":category", mi.category);
 	query.bindValue(":title", mi.title);
 	query.bindValue(":snapshot", mi.snapshot);
-	query.bindValue(":fav", mi.fav ? 1 : 0);
 	bool ok = query.exec();
 	if (!ok) {
 		qDebug() << "failed to update follow, type:" << mi.type << ", rid:" << mi.rid << ", nick:" << mi.nick;

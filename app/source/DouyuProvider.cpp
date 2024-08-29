@@ -10,6 +10,18 @@
 #include <QJSEngine>
 #include "Types.h"
 
+static quint64 parseHeat(const QString& hn) {
+	if (hn.endsWith("万")) {
+		bool ok;
+		auto r = hn.chopped(1).trimmed().toDouble(&ok);
+		return ok ? r * 10000 : 0;
+	} else {
+		bool ok;
+		auto r = hn.toULongLong(&ok, 10);
+		return ok ? r : 0;
+	}
+}
+
 DouyuProvider::DouyuProvider(QObject* parent)
 	: SourceProvider(parent)
 	, nam_(new QNetworkAccessManager(this))
@@ -99,8 +111,8 @@ std::optional<MetaInfo> DouyuProvider::processMeta(const QByteArray& data)
 	mi.nick = ri["nickname"].toString();
 	mi.avatar = ri["avatar"].toString();
 	mi.snapshot = ri["roomSrc"].toString();
-	mi.heat = ri["hn"].toString();
-	mi.live = ri["isLive"].toBool();
+	mi.heat = parseHeat(ri["hn"].toString().trimmed());
+	mi.live = ri["isLive"].toInt() == 1;
 	mi.category = ri["cate2Name"].toString();
 	mi.startTime = ri["showTime"].toInteger();
 	return mi;
@@ -192,7 +204,7 @@ void DouyuProvider::processSearch(const QByteArray &data)
 		mi.avatar = obj["avatar"].toString();
 		mi.snapshot = obj["roomSrc"].toString();
 		mi.category = obj["cateName"].toString();
-		mi.heat = obj["hot"].toString();
+		mi.heat = parseHeat(obj["hot"].toString().trimmed());
 		mi.live = obj["isLive"].toInt() == 1;
 		ret.append(mi);
 	}

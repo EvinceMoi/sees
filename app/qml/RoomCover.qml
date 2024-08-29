@@ -13,6 +13,7 @@ Item {
     required property string heat
     required property string category
     required property bool fav
+    required property bool live
 
     signal clicked
     // 关注
@@ -41,8 +42,10 @@ Item {
 
             height: parent.height * 0.8
             width: parent.width
-            anchors.top: parent.top
-            anchors.left: parent.left
+            anchors {
+                top: parent.top
+                left: parent.left
+            }
 
             MouseArea {
                 anchors.fill: parent
@@ -66,6 +69,57 @@ Item {
                 clip: true
                 source: root.snapshot
             }
+
+            Rectangle {
+                anchors {
+                    bottom: parent.bottom
+                    bottomMargin: 2
+                    right: parent.right
+                    rightMargin: 2
+                }
+                color: 'black'
+                opacity: 0.7
+                height: 16
+                width: height * 4
+
+                Text {
+                    anchors.fill: parent
+                    anchors.rightMargin: 4
+                    horizontalAlignment: Text.AlignRight
+                    verticalAlignment: Text.AlignVCenter
+                    color: 'white'
+                    text: Icons.hot + ' ' + formatHeat(root.heat)
+                    function formatHeat(h) {
+                        if (h > 10000) {
+                            let n = Math.floor(h / 1000) / 10
+                            return `${n}万`
+                        }
+                        return h
+                    }
+                }
+            }
+
+            Rectangle {
+                visible: !root.live
+                anchors {
+                    top: parent.top
+                    topMargin: 2
+                    left: parent.left
+                    leftMargin: 2
+                }
+                color: 'black'
+                opacity: 0.7
+                height: 16
+                width: height
+
+                Text {
+                    anchors.fill: parent
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    color: 'white'
+                    text: Icons.video
+                }
+            }
         }
 
         Item {
@@ -73,8 +127,10 @@ Item {
 
             height: parent.height - top.height
             width: parent.width
-            anchors.left: parent.left
-            anchors.bottom: parent.bottom
+            anchors {
+                left: parent.left
+                bottom: parent.bottom
+            }
 
             // avartar
             Image {
@@ -95,7 +151,6 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.right: parent.right
 
-                // anchors.margins: 2
                 Item {
                     height: parent.height / 2
                     width: parent.width
