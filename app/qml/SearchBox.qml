@@ -10,6 +10,18 @@ Item {
     signal textChanged(string text)
     property real iconSize: height * 0.6
 
+    // border
+    Rectangle {
+        anchors.fill: parent
+        border {
+            color: input.activeFocus ? palette.active.highlight : palette.active.button
+            width: 1
+        }
+        radius: 2
+
+        color: "black"
+    }
+
     RowLayout {
         anchors.fill: parent
         spacing: 2
@@ -62,14 +74,5 @@ Item {
                 }
             }
         }
-    }
-
-    // border
-    Rectangle {
-        width: parent.width
-        height: 1
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        color: "black"
     }
 }

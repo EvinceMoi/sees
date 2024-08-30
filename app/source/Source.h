@@ -32,6 +32,9 @@ public:
 	Q_INVOKABLE void search(const QString& type, const QString& kw);
 	Q_INVOKABLE void filterFollows(const QString& kw);
 
+	Q_INVOKABLE QStringList getTypes();
+	Q_INVOKABLE QString getNameByType(const QString& type);
+
 public:
 	bool dbSaveFollow(const MetaInfo& mi);
 	bool dbRemoveFollow(const QString& type, const QString& rid);

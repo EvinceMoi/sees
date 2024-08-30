@@ -3,12 +3,13 @@ import QtQuick
 Item {
     id: root
 
-    signal clicked
     property real size: 32
     property bool highlight: false
     property bool round: false
     required property string icon
     property bool hovered: hover.hovered
+
+    signal clicked()
 
     width: size
     height: size
@@ -16,13 +17,16 @@ Item {
     HoverHandler {
         id: hover
     }
+
     TapHandler {
         id: tap
+
         onTapped: root.clicked()
     }
 
     Rectangle {
         id: bg
+
         anchors.fill: parent
         radius: round ? root.size / 2 : 2
         color: (hover.hovered || highlight) ? "darkgray" : "transparent"
@@ -34,5 +38,7 @@ Item {
             fontSizeMode: Text.Fit
             color: '#f0f0f0'
         }
+
     }
+
 }

@@ -14,24 +14,20 @@ Item {
     required property string category
     required property bool fav
     required property bool live
-
-    signal clicked
-    // 关注
-    signal follow
-    signal unfollow
-    // 特别关注
-    signal like
-    signal unlike
-
     property bool hovered: hover.hovered
+
+    signal clicked()
+    // 关注
+    signal follow()
+    signal unfollow()
+    // 特别关注
+    signal like()
+    signal unlike()
 
     Rectangle {
         anchors.fill: parent
-        anchors.margins: 2
-
-        color: "transparent"
-        border.color: hover.hovered ? "green" : "transparent"
-        border.width: 1
+        anchors.margins: 4
+        color: hover.hovered ? palette.active.highlight : "transparent"
 
         HoverHandler {
             id: hover
@@ -42,6 +38,7 @@ Item {
 
             height: parent.height * 0.8
             width: parent.width
+
             anchors {
                 top: parent.top
                 left: parent.left
@@ -50,14 +47,12 @@ Item {
             MouseArea {
                 anchors.fill: parent
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
-                onClicked: function (event) {
+                onClicked: function(event) {
                     if (event.button === Qt.RightButton) {
-
-                        // Source.fetchMeta(root.type, root.rid)
                     }
                 }
                 onDoubleClicked: {
-                    Source.fetchMedia(root.type, root.rid)
+                    Source.fetchMedia(root.type, root.rid);
                 }
             }
 
@@ -65,52 +60,58 @@ Item {
                 id: snap
 
                 anchors.fill: parent
-                fillMode: Image.PreserveAspectFit
-                clip: true
+                fillMode: Image.PreserveAspectCrop
+                clip: false
                 source: root.snapshot
             }
 
+            // heat icon
             Rectangle {
+                color: 'black'
+                opacity: 0.7
+                height: 16
+                width: height * 4
+
                 anchors {
                     bottom: parent.bottom
                     bottomMargin: 2
                     right: parent.right
                     rightMargin: 2
                 }
-                color: 'black'
-                opacity: 0.7
-                height: 16
-                width: height * 4
 
                 Text {
+                    function formatHeat(h) {
+                        if (h > 10000) {
+                            let n = Math.floor(h / 1000) / 10;
+                            return `${n}万`;
+                        }
+                        return h;
+                    }
+
                     anchors.fill: parent
                     anchors.rightMargin: 4
                     horizontalAlignment: Text.AlignRight
                     verticalAlignment: Text.AlignVCenter
                     color: 'white'
                     text: Icons.hot + ' ' + formatHeat(root.heat)
-                    function formatHeat(h) {
-                        if (h > 10000) {
-                            let n = Math.floor(h / 1000) / 10
-                            return `${n}万`
-                        }
-                        return h
-                    }
                 }
+
             }
 
+            // live icon
             Rectangle {
                 visible: !root.live
+                color: 'black'
+                opacity: 0.7
+                height: 16
+                width: height
+
                 anchors {
                     top: parent.top
                     topMargin: 2
                     left: parent.left
                     leftMargin: 2
                 }
-                color: 'black'
-                opacity: 0.7
-                height: 16
-                width: height
 
                 Text {
                     anchors.fill: parent
@@ -119,7 +120,9 @@ Item {
                     color: 'white'
                     text: Icons.video
                 }
+
             }
+
         }
 
         Item {
@@ -127,6 +130,7 @@ Item {
 
             height: parent.height - top.height
             width: parent.width
+
             anchors {
                 left: parent.left
                 bottom: parent.bottom
@@ -164,6 +168,7 @@ Item {
                         font.pointSize: Math.max(height * 0.5, 6)
                         elide: Text.ElideRight
                     }
+
                 }
 
                 Item {
@@ -178,8 +183,13 @@ Item {
                         text: root.nick
                         font.pointSize: Math.max(height * 0.5, 6)
                     }
+
                 }
+
             }
+
         }
+
     }
+
 }

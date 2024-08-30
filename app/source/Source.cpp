@@ -1,4 +1,5 @@
 #include "Source.h"
+#include <ranges>
 
 #include "Model.h"
 #include "DouyuProvider.h"
@@ -232,6 +233,20 @@ void Source::search(const QString &type, const QString &kw)
 void Source::filterFollows(const QString &kw)
 {
 	followProxyModel_->search(kw);
+}
+
+QStringList Source::getTypes()
+{
+	auto kv = std::views::keys(mtype_);
+	return QStringList{kv.begin(), kv.end()};
+}
+
+QString Source::getNameByType(const QString &type)
+{
+	auto it = getProvider(type).and_then([](auto sp) {
+		return std::optional<QString>(sp->getName());
+	});
+	return it ? it.value() : QString{};
 }
 
 bool Source::dbSaveFollow(const MetaInfo &mi)
