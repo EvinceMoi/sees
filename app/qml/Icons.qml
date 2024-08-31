@@ -1,6 +1,5 @@
-pragma Singleton
-
 import QtQuick
+pragma Singleton
 
 QtObject {
     id: icons
@@ -16,7 +15,7 @@ QtObject {
     readonly property string followed: ''
     readonly property string refresh: ''
     readonly property string mute: ''
-    readonly property string unmute: ''
+    readonly property string volume: ''
     readonly property string subtitle: '󰨗'
     readonly property string fullscreen: '󰊓'
     readonly property string fullscreenExit: '󰊔'

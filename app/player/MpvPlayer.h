@@ -48,6 +48,8 @@ public:
 
     Q_INVOKABLE void loadFile(const QString &file);
     Q_INVOKABLE void loadMedia(const QString &video, const QString &audio, const QString &subtitle);
+    Q_INVOKABLE void showInfo();
+    Q_INVOKABLE void toggleMute();
 
 Q_SIGNALS:
     void mediaTitleChanged();

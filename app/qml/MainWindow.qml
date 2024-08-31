@@ -8,6 +8,7 @@ ApplicationWindow {
     id: root
 
     property int refreshTimeout: 180 // in seconds
+    property bool showInfo: false
 
     width: 800
     height: 450
@@ -16,17 +17,10 @@ ApplicationWindow {
         Source.refresh(0);
     }
 
-    Shortcut {
-        sequence: "q"
-        onActivated: Qt.quit()
+    Shortcuts {
     }
 
-    Shortcut {
-        sequence: "m"
-        onActivated: player.setPropertyAsync(MpvProps.Mute, !player.getProperty(MpvProps.Mute))
-    }
-
-    MpvPlayer {
+    Player {
         id: player
 
         anchors.fill: parent
@@ -70,7 +64,7 @@ ApplicationWindow {
         anchors.left: parent.left
         anchors.top: parent.top
         width: 0.1 * parent.width
-        height: 0.8 * parent.height // the rest should be to video controller
+        height: 0.4 * parent.height // the rest should be to video controller
         hoverEnabled: true
         onEntered: {
             drawer.open();

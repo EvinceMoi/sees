@@ -4,12 +4,15 @@ qt_add_library(qmlui STATIC)
 
 set(qml_files
 	MainWindow.qml
+	Player.qml
 	Panel.qml
 	IconButton.qml
 	SearchBox.qml
 	RoomCover.qml
 	FollowView.qml
 	SearchView.qml
+	InfoView.qml
+	Shortcuts.qml
 )
 set(singleton_qml_files
 	Fonts.qml

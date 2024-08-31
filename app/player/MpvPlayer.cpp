@@ -18,8 +18,8 @@ MpvPlayer::MpvPlayer(QQuickItem *parent)
     // since this is async the effects are not immediately visible
     // to do something after the property was set do it in onAsyncReply
     // use the id to identify the correct call
-    setPropertyAsync(QStringLiteral("volume"), 99, static_cast<int>(MpvPlayer::AsyncIds::SetVolume));
-    setProperty(QStringLiteral("mute"), true);
+    setPropertyAsync(QStringLiteral("volume"), 64, static_cast<int>(MpvPlayer::AsyncIds::SetVolume));
+    setProperty(QStringLiteral("mute"), false);
 
     // since this is async the effects are not immediately visible
     // to get the value do it in onGetPropertyReply
@@ -118,6 +118,12 @@ void MpvPlayer::loadFile(const QString &file)
 
 void MpvPlayer::loadMedia(const QString &video, const QString &audio, const QString &subtitle)
 {
+    auto url = QUrl::fromUserInput(video);
+    if (m_currentUrl != url) {
+        m_currentUrl = url;
+        Q_EMIT currentUrlChanged();
+    }
+
 	QStringList commands;
 	commands << QStringLiteral("loadfile") << video;
 	if (!audio.isEmpty() || !subtitle.isEmpty()) {
@@ -135,6 +141,20 @@ void MpvPlayer::loadMedia(const QString &video, const QString &audio, const QStr
 	}
 
 	Q_EMIT command(commands);
+}
+
+void MpvPlayer::showInfo()
+{
+	QStringList commands;
+	commands << QStringLiteral("script-binding") << QStringLiteral("stats/display-stats");
+	Q_EMIT command(commands);
+}
+
+void MpvPlayer::toggleMute()
+{
+	auto prop = QStringLiteral("mute");
+	auto mute = getProperty(prop).toBool();
+	setProperty(prop, !mute);
 }
 
 QString MpvPlayer::mediaTitle()

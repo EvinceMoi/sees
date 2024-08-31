@@ -147,7 +147,7 @@ std::optional<MediaInfo> HuyaProvider::processMedia(const QByteArray& data)
 		auto max = std::max_element(items.begin(), items.end(), [](auto l, auto r){
 			return std::get<int>(l) < std::get<int>(r);
 		});
-		qDebug() << "prio:" << std::get<int>(*max);
+		if (max == items.end()) return {};
 		mi.video = std::get<QString>(*max);
 	} else {
 		auto ld = jdata["liveData"];

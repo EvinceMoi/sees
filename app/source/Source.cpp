@@ -116,7 +116,6 @@ create table if not exists follows(
 )";
 	QSqlQuery sql;
 	bool ok = sql.exec(sqlCreateFollows);
-	qDebug() << "create table follows:" << ok;
 	if (!ok) {
 		qDebug() << sql.lastQuery();
 		qDebug() << sql.lastError();
@@ -179,7 +178,6 @@ void Source::refreshOutdated(int duration)
 	while (query.next()) {
 		auto type = query.value(0).toString();
 		auto rid = query.value(1).toString();
-		qDebug() << "refresh" << type << ">" << rid;
 		fetchMeta(type, rid);
 	}
 }
