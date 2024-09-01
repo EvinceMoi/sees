@@ -64,7 +64,7 @@ ApplicationWindow {
         anchors.left: parent.left
         anchors.top: parent.top
         width: 0.1 * parent.width
-        height: 0.4 * parent.height // the rest should be to video controller
+        height: 0.6 * parent.height // the rest should be to video controller
         hoverEnabled: true
         onEntered: {
             drawer.open();

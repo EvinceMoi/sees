@@ -46,6 +46,9 @@ public:
     Q_PROPERTY(QUrl currentUrl READ currentUrl NOTIFY currentUrlChanged)
     QUrl currentUrl() const;
 
+    Q_PROPERTY(bool mute READ mute NOTIFY muteChanged)
+    bool mute();
+
     Q_INVOKABLE void loadFile(const QString &file);
     Q_INVOKABLE void loadMedia(const QString &video, const QString &audio, const QString &subtitle);
     Q_INVOKABLE void showInfo();
@@ -58,6 +61,7 @@ Q_SIGNALS:
     void durationChanged();
     void pauseChanged();
     void volumeChanged();
+    void muteChanged();
 
     void fileStarted();
     void fileLoaded();

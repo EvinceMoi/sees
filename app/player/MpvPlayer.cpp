@@ -12,6 +12,7 @@ MpvPlayer::MpvPlayer(QQuickItem *parent)
     observeProperty(MpvProps::self()->Duration, MPV_FORMAT_DOUBLE);
     observeProperty(MpvProps::self()->Pause, MPV_FORMAT_FLAG);
     observeProperty(MpvProps::self()->Volume, MPV_FORMAT_INT64);
+    observeProperty(MpvProps::self()->Mute, MPV_FORMAT_FLAG);
 
     setupConnections();
 
@@ -68,6 +69,10 @@ void MpvPlayer::onPropertyChanged(const QString &property, const QVariant &value
 
     } else if (property == MpvProps::self()->Volume) {
         Q_EMIT volumeChanged();
+
+    } else if (property == MpvProps::self()->Mute) {
+    	Q_EMIT muteChanged();
+
     }
 }
 
@@ -219,4 +224,9 @@ QString MpvPlayer::formattedPosition() const
 QUrl MpvPlayer::currentUrl() const
 {
     return m_currentUrl;
+}
+
+bool MpvPlayer::mute()
+{
+	return getProperty(MpvProps::self()->Mute).toBool();
 }
