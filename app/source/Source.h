@@ -34,6 +34,8 @@ public:
 
 	Q_INVOKABLE QStringList getTypes();
 	Q_INVOKABLE QString getNameByType(const QString& type);
+	Q_INVOKABLE void selectRoom(const QString& type, const QString& rid);
+	Q_INVOKABLE QVariantMap roomInfo() const;
 
 public:
 	bool dbSaveFollow(const MetaInfo& mi);
@@ -61,8 +63,6 @@ private:
 
 private:
 	std::unordered_map<QString, SourceProviderPtr> mtype_;
-	// std::unordered_map<QString, SourceProviderPtr> mname_;
-	// std::unordered_map<QString, SourceProviderPtr> mmatch_;
 
 	static std::once_flag once_flag_;
 
@@ -73,4 +73,6 @@ private:
 	MetaModelProxy* followProxyModel_;
 
 	MetaModel* searchModel_;
+
+	std::optional<std::pair<QString, QString>> selected_;
 };

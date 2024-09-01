@@ -18,12 +18,17 @@ ApplicationWindow {
     }
 
     Shortcuts {
+        infoView: iv
     }
 
     Player {
         id: player
 
         anchors.fill: parent
+    }
+
+    InfoView {
+        id: iv
     }
 
     Timer {
@@ -41,6 +46,8 @@ ApplicationWindow {
 
         function onMediaInfoFetched(video, audio, subtitle) {
             player.loadMedia(video, audio, subtitle);
+            // update info
+            iv.info = Source.roomInfo();
         }
 
         target: Source

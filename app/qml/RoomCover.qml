@@ -53,6 +53,7 @@ Item {
                 }
                 onDoubleClicked: {
                     Source.fetchMedia(root.type, root.rid);
+                    Source.selectRoom(root.type, root.rid);
                 }
             }
 

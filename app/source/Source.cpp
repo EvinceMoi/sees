@@ -10,13 +10,31 @@
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
-
 #include <QStandardPaths>
+#include <QJsonObject>
 
 #include <QDebug>
 
 
 std::once_flag Source::once_flag_;
+
+static QJsonObject metaToJson(const MetaInfo& mi) {
+	QJsonObject json{
+		{"type", mi.type},
+		{"rid", mi.rid},
+		{"title", mi.title},
+		{"nick", mi.nick},
+		{"avatar", mi.avatar},
+		{"snapshot", mi.snapshot},
+		{"category", mi.category},
+		{"follow", mi.follow},
+		{"fav", mi.fav},
+		{"heat", qint64(mi.heat)},
+		{"live", mi.live},
+		{"startTime", mi.startTime},
+	};
+	return json;
+}
 
 Source::Source(QObject* parent)
 	: QObject(parent)
@@ -245,6 +263,43 @@ QString Source::getNameByType(const QString &type)
 		return std::optional<QString>(sp->getName());
 	});
 	return it ? it.value() : QString{};
+}
+
+void Source::selectRoom(const QString &type, const QString &rid)
+{
+	selected_ = std::make_pair(type, rid);
+}
+
+QVariantMap Source::roomInfo() const
+{
+	if (!selected_)
+		return {};
+
+	auto s = selected_.value();
+	auto query = [s] (const QList<MetaInfo>& lst) -> std::optional<QVariantMap> {
+		auto it = lst | std::views::filter([s](auto& mi){ return mi.type == s.first && mi.rid == s.second; });
+		if (it.empty())
+			return {};
+
+		auto mi = *it.begin();
+		auto json = metaToJson(mi);
+		return json.toVariantMap();
+	};
+
+	{
+		// follows
+		auto it = query(follows_);
+		if (it)
+			return it.value();
+	}
+	{
+		// search
+		auto it = query(search_);
+		if (it)
+			return it.value();
+	}
+
+	return {};
 }
 
 bool Source::dbSaveFollow(const MetaInfo &mi)

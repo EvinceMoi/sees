@@ -7,12 +7,12 @@
 MpvPlayer::MpvPlayer(QQuickItem *parent)
     : MpvAbstractItem(parent)
 {
-    observeProperty(MpvProps::self()->MediaTitle, MPV_FORMAT_STRING);
-    observeProperty(MpvProps::self()->Position, MPV_FORMAT_DOUBLE);
-    observeProperty(MpvProps::self()->Duration, MPV_FORMAT_DOUBLE);
-    observeProperty(MpvProps::self()->Pause, MPV_FORMAT_FLAG);
-    observeProperty(MpvProps::self()->Volume, MPV_FORMAT_INT64);
-    observeProperty(MpvProps::self()->Mute, MPV_FORMAT_FLAG);
+    Q_EMIT observeProperty(MpvProps::self()->MediaTitle, MPV_FORMAT_STRING);
+    Q_EMIT observeProperty(MpvProps::self()->Position, MPV_FORMAT_DOUBLE);
+    Q_EMIT observeProperty(MpvProps::self()->Duration, MPV_FORMAT_DOUBLE);
+    Q_EMIT observeProperty(MpvProps::self()->Pause, MPV_FORMAT_FLAG);
+    Q_EMIT observeProperty(MpvProps::self()->Volume, MPV_FORMAT_INT64);
+    Q_EMIT observeProperty(MpvProps::self()->Mute, MPV_FORMAT_FLAG);
 
     setupConnections();
 

@@ -187,6 +187,9 @@ bool MetaModelProxy::filterAcceptsRow(int row, const QModelIndex &parent) const
 	auto nick = sourceModel()->data(idx, ModelRoles::NickRole).toString();
 	auto cate = sourceModel()->data(idx, ModelRoles::CategoryRole).toString();
 
-	auto search = filterRegularExpression();
-	return rid.contains(search) || title.contains(search) || nick.contains(search) || cate.contains(search);
+	auto search = filterRegularExpression().pattern();
+	return rid.contains(search)
+		|| title.contains(search, Qt::CaseInsensitive)
+		|| nick.contains(search, Qt::CaseInsensitive)
+		|| cate.contains(search, Qt::CaseInsensitive);
 }
