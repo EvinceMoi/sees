@@ -13,6 +13,7 @@ set(qml_files
 	SearchView.qml
 	InfoView.qml
 	Shortcuts.qml
+	AboutView.qml
 )
 set(singleton_qml_files
 	Fonts.qml

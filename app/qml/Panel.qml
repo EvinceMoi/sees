@@ -7,8 +7,8 @@ Item {
     enum Pages {
         Follow,
         Search,
-        Fav,
-        Category,
+        // Fav,
+        // Category,
         Settings
     }
 
@@ -33,6 +33,31 @@ Item {
         }
 
         ColumnLayout {
+            // fav
+            // IconButton {
+            //     id: fav_btn
+            //     size: toolbar.iconSize
+            //     icon: Icons.fav
+            //     Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
+            //     Layout.preferredHeight: toolbar.iconSize
+            //     highlight: pageIndex == Panel.Pages.Fav
+            //     onClicked: {
+            //         pageIndex = Panel.Pages.Fav;
+            //     }
+            // }
+            // category
+            // IconButton {
+            //     id: cate_btn
+            //     size: toolbar.iconSize
+            //     icon: Icons.all
+            //     Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
+            //     Layout.preferredHeight: toolbar.iconSize
+            //     highlight: pageIndex == Panel.Pages.Category
+            //     onClicked: {
+            //         pageIndex = Panel.Pages.Category;
+            //     }
+            // }
+
             anchors.fill: parent
             spacing: 8
 
@@ -62,34 +87,6 @@ Item {
                 highlight: pageIndex == Panel.Pages.Search
                 onClicked: {
                     pageIndex = Panel.Pages.Search;
-                }
-            }
-
-            // fav
-            IconButton {
-                id: fav_btn
-
-                size: toolbar.iconSize
-                icon: Icons.fav
-                Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
-                Layout.preferredHeight: toolbar.iconSize
-                highlight: pageIndex == Panel.Pages.Fav
-                onClicked: {
-                    pageIndex = Panel.Pages.Fav;
-                }
-            }
-
-            // category
-            IconButton {
-                id: cate_btn
-
-                size: toolbar.iconSize
-                icon: Icons.all
-                Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
-                Layout.preferredHeight: toolbar.iconSize
-                highlight: pageIndex == Panel.Pages.Category
-                onClicked: {
-                    pageIndex = Panel.Pages.Category;
                 }
             }
 
@@ -131,6 +128,13 @@ Item {
         }
 
         StackLayout {
+            // Item {
+            //     // fav
+            // }
+            // Item {
+            //     // cate
+            // }
+
             id: stack
 
             anchors.fill: parent
@@ -143,17 +147,12 @@ Item {
             }
 
             Item {
-                // fav
-
-            }
-
-            Item {
-                // cate
-
-            }
-
-            Item {
                 // setting
+                id: settingView
+
+                AboutView {
+                    anchors.fill: parent
+                }
 
             }
 

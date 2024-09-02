@@ -9,6 +9,10 @@ Item {
     readonly property color fontColor: "snow"
 
     function toggle() {
+        if (!info) {
+            root.visible = false;
+            return ;
+        }
         root.visible = !root.visible;
     }
 
@@ -27,7 +31,6 @@ Item {
             font.pointSize: fontSize
             color: fontColor
             horizontalAlignment: Text.AlignRight
-            // text: info.typeName
             text: info ? info.type : ""
         }
 
