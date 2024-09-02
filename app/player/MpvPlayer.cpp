@@ -20,7 +20,7 @@ MpvPlayer::MpvPlayer(QQuickItem *parent)
     // to do something after the property was set do it in onAsyncReply
     // use the id to identify the correct call
     setPropertyAsync(QStringLiteral("volume"), 64, static_cast<int>(MpvPlayer::AsyncIds::SetVolume));
-    setProperty(QStringLiteral("mute"), false);
+    // setProperty(QStringLiteral("mute"), false);
 
     // since this is async the effects are not immediately visible
     // to get the value do it in onGetPropertyReply
@@ -83,15 +83,12 @@ void MpvPlayer::onAsyncReply(const QVariant &data, mpv_event event)
         break;
     }
     case AsyncIds::SetVolume: {
-        qDebug() << "onSetPropertyReply" << event.reply_userdata;
         break;
     }
     case AsyncIds::GetVolume: {
-        qDebug() << "onGetPropertyReply" << event.reply_userdata << data;
         break;
     }
     case AsyncIds::ExpandText: {
-        qDebug() << "onGetPropertyReply" << event.reply_userdata << data;
         break;
     }
     }

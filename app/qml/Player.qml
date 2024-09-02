@@ -4,12 +4,6 @@ import QtQuick
 MpvPlayer {
     id: player
 
-    property int volumeEventCount: 0 // ignore first change
-
-    function ignoreVolumeEvent() {
-        return ++volumeEventCount < 3;
-    }
-
     function updateVolume(delta) {
         let vol = player.volume;
         vol += delta;
@@ -19,15 +13,11 @@ MpvPlayer {
 
     onVolumeChanged: {
         volIcon.volume = player.volume;
-        if (!ignoreVolumeEvent())
-            volIcon.show();
-
+        volIcon.show();
     }
     onMuteChanged: {
         volIcon.mute = player.mute;
-        if (!ignoreVolumeEvent())
-            volIcon.show();
-
+        volIcon.show();
     }
 
     Shortcut {

@@ -9,6 +9,11 @@ configure:
     mkdir build
     cd build; cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug
 
+# cmake configure
+configure-release:
+    mkdir build
+    cd build; cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release
+
 configure-with-qml-debug:
     mkdir build
     cd build; cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug -DENABLE_QML_DEBUG=1
