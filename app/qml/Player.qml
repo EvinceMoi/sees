@@ -64,6 +64,7 @@ MpvPlayer {
         color: 'snow'
         text: volText()
         font.pointSize: 15
+        style: Text.Outline
         horizontalAlignment: Text.AlignRight
 
         anchors {

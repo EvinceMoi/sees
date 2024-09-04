@@ -32,6 +32,7 @@ Item {
             color: fontColor
             horizontalAlignment: Text.AlignRight
             text: info ? info.type : ""
+            style: Text.Outline
         }
 
         Text {
@@ -39,6 +40,7 @@ Item {
             color: fontColor
             horizontalAlignment: Text.AlignRight
             text: info ? info.rid : ""
+            style: Text.Outline
         }
 
         Text {
@@ -46,6 +48,7 @@ Item {
             color: fontColor
             horizontalAlignment: Text.AlignRight
             text: info ? info.nick : ""
+            style: Text.Outline
         }
 
         Text {
@@ -53,6 +56,7 @@ Item {
             color: fontColor
             horizontalAlignment: Text.AlignRight
             text: info ? info.title : ""
+            style: Text.Outline
         }
 
         Text {
@@ -60,6 +64,7 @@ Item {
             color: fontColor
             horizontalAlignment: Text.AlignRight
             text: info ? format_ts(info.startTime) : ""
+            style: Text.Outline
         }
 
         Item {
