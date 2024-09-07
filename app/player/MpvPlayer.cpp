@@ -19,13 +19,13 @@ MpvPlayer::MpvPlayer(QQuickItem *parent)
     // since this is async the effects are not immediately visible
     // to do something after the property was set do it in onAsyncReply
     // use the id to identify the correct call
-    setPropertyAsync(QStringLiteral("volume"), 64, static_cast<int>(MpvPlayer::AsyncIds::SetVolume));
+    // setPropertyAsync(QStringLiteral("volume"), 64, static_cast<int>(MpvPlayer::AsyncIds::SetVolume));
     // setProperty(QStringLiteral("mute"), false);
 
     // since this is async the effects are not immediately visible
     // to get the value do it in onGetPropertyReply
     // use the id to identify the correct call
-    getPropertyAsync(MpvProps::self()->Volume, static_cast<int>(MpvPlayer::AsyncIds::GetVolume));
+    // getPropertyAsync(MpvProps::self()->Volume, static_cast<int>(MpvPlayer::AsyncIds::GetVolume));
 }
 
 void MpvPlayer::setupConnections()

@@ -1,4 +1,5 @@
 import MpvPlayer
+import QtCore
 import QtQuick
 
 MpvPlayer {
@@ -18,6 +19,13 @@ MpvPlayer {
     onMuteChanged: {
         volIcon.mute = player.mute;
         volIcon.show();
+    }
+
+    Settings {
+        property alias volume: player.volume
+        property alias mute: player.mute
+
+        category: "player"
     }
 
     Shortcut {

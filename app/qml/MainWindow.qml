@@ -10,6 +10,13 @@ ApplicationWindow {
     property int refreshTimeout: 180 // in seconds
     property bool showInfo: false
 
+    function toggleFullScreen() {
+        if (root.visibility === Window.FullScreen)
+            root.visibility = Window.Windowed;
+        else
+            root.visibility = Window.FullScreen;
+    }
+
     width: 800
     height: 450
     visible: true
@@ -17,8 +24,17 @@ ApplicationWindow {
         Source.refresh(0);
     }
 
+    Settings {
+        property alias x: root.x
+        property alias y: root.y
+        property alias width: root.width
+        property alias height: root.height
+    }
+
     Shortcuts {
+        window: root
         infoView: iv
+        drawer: drawer
     }
 
     Player {
@@ -87,11 +103,10 @@ ApplicationWindow {
         dim: true
 
         MouseArea {
-            // drawer.close()
-
             anchors.fill: parent
             hoverEnabled: true
             onExited: {
+                drawer.close();
             }
 
             Panel {

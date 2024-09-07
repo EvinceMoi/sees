@@ -14,7 +14,9 @@ Application::Application(int argc, char* argv[])
 	: QGuiApplication(argc, argv)
 	, qmlengine_(new QQmlApplicationEngine(this))
 {
-
+	setOrganizationName("sees");
+	setOrganizationName("sees");
+	setApplicationName("sees");
 }
 
 Application::~Application()
