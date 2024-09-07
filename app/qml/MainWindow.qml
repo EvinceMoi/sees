@@ -17,8 +17,18 @@ ApplicationWindow {
             root.visibility = Window.FullScreen;
     }
 
+    function toggleStayOnTop() {
+        // probably not working in some wayland sessions
+        root.flags ^= Qt.WindowStaysOnTopHint;
+    }
+
+    function toggleFrameless() {
+        root.flags ^= Qt.FramelessWindowHint;
+    }
+
     width: 800
     height: 450
+    flags: Qt.Window | Qt.FramelessWindowHint
     visible: true
     Component.onCompleted: {
         Source.refresh(0);
@@ -80,6 +90,13 @@ ApplicationWindow {
             if (drop.hasUrls)
                 player.loadFile(drop.urls[0]);
 
+        }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onPressed: {
+            root.startSystemMove();
         }
     }
 

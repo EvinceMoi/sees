@@ -25,6 +25,16 @@ Item {
     }
 
     Shortcut {
+        sequence: "alt+f"
+        onActivated: window.toggleFrameless()
+    }
+
+    Shortcut {
+        sequence: "t"
+        onActivated: window.toggleStayOnTop()
+    }
+
+    Shortcut {
         context: Qt.ApplicationShortcut
         sequence: "tab"
         onActivated: {
