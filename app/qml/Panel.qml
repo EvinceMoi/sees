@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import Source
 
 Item {
     id: root
@@ -73,6 +74,10 @@ Item {
                 highlight: pageIndex == Panel.Pages.Follow
                 onClicked: {
                     pageIndex = Panel.Pages.Follow;
+                }
+                onDoubleClicked: {
+                    // manual refresh
+                    Source.refresh(0);
                 }
             }
 

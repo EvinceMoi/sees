@@ -10,6 +10,7 @@ Item {
     property bool hovered: hover.hovered
 
     signal clicked()
+    signal doubleClicked()
 
     width: size
     height: size
@@ -22,6 +23,7 @@ Item {
         id: tap
 
         onTapped: root.clicked()
+        onDoubleTapped: root.doubleClicked()
     }
 
     Rectangle {

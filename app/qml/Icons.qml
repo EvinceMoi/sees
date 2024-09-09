@@ -35,4 +35,5 @@ QtObject {
     readonly property string imageOff: '󰠫'
     readonly property string avatar: ''
     readonly property string unavailable: '󱞃'
+    readonly property string offline: ''
 }

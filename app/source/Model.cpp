@@ -30,6 +30,7 @@ QHash<int, QByteArray> MetaModel::roleNames() const
 	roles[FavRole] = "fav";
 	roles[HeatRole] = "heat";
 	roles[LiveRole] = "live";
+	roles[RecordRole] = "record";
 	roles[StartTimeRole] = "startTime";
 	roles[LastUpdateRole] = "lastUpdate";
 	return roles;
@@ -54,6 +55,7 @@ QVariant MetaModel::data(const QModelIndex &idx, int role) const
 		case FavRole: return it.fav;
 		case HeatRole: return it.heat;
 		case LiveRole: return it.live;
+		case RecordRole: return it.record;
 		case StartTimeRole: return it.startTime;
 		case LastUpdateRole: return it.lastUpdate;
 	}
@@ -77,6 +79,7 @@ void MetaModel::changeAtIndex(int idx)
 		FavRole,
 		HeatRole,
 		LiveRole,
+		RecordRole,
 		StartTimeRole
 	};
 

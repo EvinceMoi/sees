@@ -14,6 +14,7 @@ Item {
     required property string category
     required property bool fav
     required property bool live
+    required property bool record
     property bool hovered: hover.hovered
 
     signal clicked()
@@ -101,7 +102,7 @@ Item {
 
             // live icon
             Rectangle {
-                visible: !root.live
+                visible: !root.live || root.record
                 color: 'black'
                 opacity: 0.7
                 height: 16
@@ -119,7 +120,7 @@ Item {
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     color: 'white'
-                    text: Icons.video
+                    text: root.record ? Icons.video : Icons.offline
                 }
 
             }

@@ -19,6 +19,7 @@ struct MetaInfo
 	bool fav;
 	quint64 heat;
 	bool live;
+	bool record;
 	qint64 startTime;
 	QString lastUpdate;
 

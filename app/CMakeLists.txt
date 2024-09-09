@@ -5,6 +5,7 @@ add_subdirectory(source)
 add_executable(sees
 	main.cpp
 	Application.h Application.cpp
+	resources.qrc
 )
 
 target_link_libraries(sees

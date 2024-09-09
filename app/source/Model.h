@@ -20,6 +20,7 @@ enum ModelRoles {
 	FavRole,
 	HeatRole,
 	LiveRole,
+	RecordRole,
 	StartTimeRole,
 	LastUpdateRole,
 };

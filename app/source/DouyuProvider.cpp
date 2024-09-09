@@ -47,7 +47,8 @@ QNetworkRequest DouyuProvider::genRequest(const QString& url, const QString& ref
 
 void DouyuProvider::fetchMeta(const QString& rid)
 {
-	auto req = genRequest(QString("https://m.douyu.com/%1").arg(rid), "https://m.douyu.com");
+	auto url = QString("https://www.douyu.com/betard/%1").arg(rid);
+	auto req = genRequest(url, QString("https://www.douyu.com/%1").arg(rid));
 	auto reply = nam_->get(req);
 	connect(reply, &QNetworkReply::finished, [this, reply](){
 		auto data = reply->readAll();
@@ -93,28 +94,23 @@ void DouyuProvider::search(const QString &in)
 
 std::optional<MetaInfo> DouyuProvider::processMeta(const QByteArray& data)
 {
-	static QRegularExpression re(R"(<script id="vike_pageContext" type="application/json">(.*)</script>)");
-	QString html(data);
-	auto matches = re.match(html);
-	if (!matches.hasMatch()) return {};
-
-	auto props = matches.captured(1);
-	auto doc = QJsonDocument::fromJson(props.toUtf8());
+	auto doc = QJsonDocument::fromJson(data);
 	if (doc.isNull()) return {};
-	auto ri = doc["pageProps"]["room"]["roomInfo"]["roomInfo"];
+	auto ri = doc["room"];
 	if (!ri.isObject()) return {};
 
 	MetaInfo mi;
-	mi.rid = QString::number(ri["rid"].toInteger());
+	mi.rid = QString::number(ri["room_id"].toInteger());
 	mi.type = QString("douyu");
-	mi.title = ri["roomName"].toString();
-	mi.nick = ri["nickname"].toString();
-	mi.avatar = ri["avatar"].toString();
-	mi.snapshot = ri["roomSrc"].toString();
-	mi.heat = parseHeat(ri["hn"].toString().trimmed());
-	mi.live = ri["isLive"].toInt() == 1;
-	mi.category = ri["cate2Name"].toString();
-	mi.startTime = ri["showTime"].toInteger();
+	mi.title = ri["room_name"].toString();
+	mi.nick = ri["owner_name"].toString();
+	mi.avatar = ri["owner_avatar"].toString();
+	mi.snapshot = ri["room_pic"].toString();
+	mi.heat = parseHeat(ri["room_biz_all"]["hot"].toString().trimmed());
+	mi.live = ri["show_status"].toInt() == 1;
+	mi.record = ri["videoLoop"].toInt() == 1;
+	mi.category = ri["second_lvl_name"].toString();
+	mi.startTime = ri["show_time"].toInteger();
 	return mi;
 }
 
