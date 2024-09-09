@@ -26,6 +26,8 @@ struct MetaInfo
 	MetaInfo()
 		: id(std::numeric_limits<std::uint64_t>::max())
 		, fav(false)
+		, live(false)
+		, record(false)
 	{
 
 	}
