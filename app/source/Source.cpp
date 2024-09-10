@@ -31,6 +31,7 @@ static QJsonObject metaToJson(const MetaInfo& mi) {
 		{"fav", mi.fav},
 		{"heat", qint64(mi.heat)},
 		{"live", mi.live},
+		{"record", mi.record},
 		{"startTime", mi.startTime},
 	};
 	return json;
@@ -407,6 +408,7 @@ void Source::onMeta(const MetaInfo &mi)
 	// load from db and update mem
 	dbGetFollow(mi.type, mi.rid).and_then([this, mi](MetaInfo m) {
 		m.live = mi.live;
+		m.record = mi.record;
 		m.heat = mi.heat;
 		m.startTime = mi.startTime;
 		followModel_->update(m);
