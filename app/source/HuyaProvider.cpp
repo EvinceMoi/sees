@@ -105,7 +105,8 @@ std::optional<MetaInfo> HuyaProvider::processMeta(const QByteArray& data)
 	auto ld = jdata["liveData"];
 
 	MetaInfo mi;
-	mi.rid = QString::number(pi["profileRoom"].toInt());
+	auto profileRoom = pi["profileRoom"];
+	mi.rid = profileRoom.isString() ? profileRoom.toString() : QString::number(pi["profileRoom"].toInt());
 	mi.type = QString("huya");
 	mi.title = ld["introduction"].toString();
 	mi.nick = ld["nick"].toString();
