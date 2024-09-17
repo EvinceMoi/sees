@@ -122,9 +122,6 @@ ApplicationWindow {
         MouseArea {
             anchors.fill: parent
             hoverEnabled: true
-            onExited: {
-                drawer.close();
-            }
 
             Panel {
                 id: panel
