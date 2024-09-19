@@ -165,19 +165,20 @@ bool MetaModelProxy::lessThan(const QModelIndex &left, const QModelIndex &right)
 {
 	auto lfav = sourceModel()->data(left, ModelRoles::FavRole).toBool();
 	auto rfav = sourceModel()->data(right, ModelRoles::FavRole).toBool();
-	if (lfav != rfav) {
-		return !lfav;
-	}
-
 	auto llive = sourceModel()->data(left, ModelRoles::LiveRole).toBool();
 	auto rlive = sourceModel()->data(right, ModelRoles::LiveRole).toBool();
+	auto lheat = sourceModel()->data(left, ModelRoles::HeatRole).toULongLong();
+	auto rheat = sourceModel()->data(right, ModelRoles::HeatRole).toULongLong();
+
 	if (llive != rlive) {
 		return !llive;
 	}
 
+	if (lfav != rfav) {
+		return !lfav;
+	}
 
-	auto lheat = sourceModel()->data(left, ModelRoles::HeatRole).toULongLong();
-	auto rheat = sourceModel()->data(right, ModelRoles::HeatRole).toULongLong();
+
 	return lheat < rheat;
 }
 

@@ -53,6 +53,7 @@ public:
     Q_INVOKABLE void loadMedia(const QString &video, const QString &audio, const QString &subtitle);
     Q_INVOKABLE void showInfo();
     Q_INVOKABLE void toggleMute();
+    Q_INVOKABLE void stop();
 
 Q_SIGNALS:
     void mediaTitleChanged();

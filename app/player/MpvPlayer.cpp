@@ -43,6 +43,10 @@ void MpvPlayer::setupConnections()
     connect(mpvController(), &MpvController::endFile,
             this, &MpvPlayer::endFile, Qt::QueuedConnection);
 
+	connect(mpvController(), &MpvController::endFile, [this](auto reason) {
+		this->clear();
+	});
+
     connect(mpvController(), &MpvController::videoReconfig,
             this, &MpvPlayer::videoReconfig, Qt::QueuedConnection);
 
@@ -55,42 +59,36 @@ void MpvPlayer::onPropertyChanged(const QString &property, const QVariant &value
 {
     if (property == MpvProps::self()->MediaTitle) {
         Q_EMIT mediaTitleChanged();
-
     } else if (property == MpvProps::self()->Position) {
         m_formattedPosition = formatTime(value.toDouble());
         Q_EMIT positionChanged();
-
     } else if (property == MpvProps::self()->Duration) {
         m_formattedDuration = formatTime(value.toDouble());
         Q_EMIT durationChanged();
-
     } else if (property == MpvProps::self()->Pause) {
         Q_EMIT pauseChanged();
-
     } else if (property == MpvProps::self()->Volume) {
         Q_EMIT volumeChanged();
-
     } else if (property == MpvProps::self()->Mute) {
     	Q_EMIT muteChanged();
-
     }
 }
 
 void MpvPlayer::onAsyncReply(const QVariant &data, mpv_event event)
 {
     switch (static_cast<AsyncIds>(event.reply_userdata)) {
-    case AsyncIds::None: {
-        break;
-    }
-    case AsyncIds::SetVolume: {
-        break;
-    }
-    case AsyncIds::GetVolume: {
-        break;
-    }
-    case AsyncIds::ExpandText: {
-        break;
-    }
+		case AsyncIds::None: {
+			break;
+		}
+		case AsyncIds::SetVolume: {
+			break;
+		}
+		case AsyncIds::GetVolume: {
+			break;
+		}
+		case AsyncIds::ExpandText: {
+			break;
+		}
     }
 }
 
@@ -157,6 +155,13 @@ void MpvPlayer::toggleMute()
 	auto prop = QStringLiteral("mute");
 	auto mute = getProperty(prop).toBool();
 	setProperty(prop, !mute);
+}
+
+void MpvPlayer::stop()
+{
+	QStringList commands;
+	commands << QStringLiteral("stop"); // << QStringLiteral("keep-playlist");
+	Q_EMIT command(commands);
 }
 
 QString MpvPlayer::mediaTitle()

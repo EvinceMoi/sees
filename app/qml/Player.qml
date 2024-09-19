@@ -44,6 +44,11 @@ MpvPlayer {
     }
 
     Shortcut {
+        sequence: "Shift+s"
+        onActivated: player.stop()
+    }
+
+    Shortcut {
         sequence: "Shift+i"
         onActivated: {
             player.showInfo();
