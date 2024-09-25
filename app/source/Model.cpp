@@ -146,7 +146,7 @@ MetaModelProxy::~MetaModelProxy()
 
 void MetaModelProxy::search(const QString &kw)
 {
-	setFilterFixedString(kw);
+	setFilterRegularExpression(kw);
 	invalidateFilter();
 }
 
@@ -192,6 +192,9 @@ bool MetaModelProxy::filterAcceptsRow(int row, const QModelIndex &parent) const
 	auto cate = sourceModel()->data(idx, ModelRoles::CategoryRole).toString();
 
 	auto search = filterRegularExpression().pattern();
+	if (search.isEmpty())
+		return true;
+
 	return rid.contains(search)
 		|| title.contains(search, Qt::CaseInsensitive)
 		|| nick.contains(search, Qt::CaseInsensitive)
