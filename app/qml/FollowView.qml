@@ -7,8 +7,22 @@ Item {
         leftMargin: 10
         rightMargin: 10
     }
-    // top
 
+    Shortcut {
+        sequence: StandardKey.MoveToStartOfLine
+        onActivated: {
+            gv.positionViewAtBeginning();
+        }
+    }
+
+    Shortcut {
+        sequence: StandardKey.MoveToEndOfLine
+        onActivated: {
+            gv.positionViewAtEnd();
+        }
+    }
+
+    // top
     SearchBox {
         id: search
 

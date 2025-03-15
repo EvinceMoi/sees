@@ -29,8 +29,9 @@ public:
 
 private:
 	QNetworkReply* doRequest(const QString& rid);
+	QNetworkReply* getUid();
 	std::optional<MetaInfo> processMeta(const QByteArray& data);
-	std::optional<MediaInfo> processMedia(const QByteArray& data);
+	void processMedia(const QString& uid, const QByteArray& data);
 
 	void processSearch(const QByteArray& data);
 

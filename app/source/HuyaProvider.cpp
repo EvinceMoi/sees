@@ -43,17 +43,30 @@ void HuyaProvider::fetchMeta(const QString& rid)
 
 void HuyaProvider::fetchMedia(const QString& rid)
 {
-	auto reply = doRequest(rid);
-	connect(reply, &QNetworkReply::finished, [this, rid, reply](){
-		auto data = reply->readAll();
-		auto mi = processMedia(data);
-		if (mi)
-			emit gotMedia(mi.value());
-		reply->deleteLater();
+	auto uidReply = getUid();
+	connect(uidReply, &QNetworkReply::finished, [this, rid, uidReply](){
+		uidReply->deleteLater();
+
+		auto uidData = uidReply->readAll();
+		auto doc = QJsonDocument::fromJson(uidData);
+		if (doc.isNull()) return;
+		auto uid = doc["data"]["uid"].toString();
+
+		auto reply = doRequest(rid);
+		connect(reply, &QNetworkReply::finished, [this, rid, uid, reply](){
+			reply->deleteLater();
+
+			auto data = reply->readAll();
+			processMedia(uid, data);
+		});
+		connect(reply, &QNetworkReply::errorOccurred, [reply](QNetworkReply::NetworkError code){
+			qDebug() << "network error fetchMedia: " << code;
+			reply->deleteLater();
+		});
 	});
-	connect(reply, &QNetworkReply::errorOccurred, [reply](QNetworkReply::NetworkError code){
+	connect(uidReply, &QNetworkReply::errorOccurred, [uidReply](QNetworkReply::NetworkError code){
 		qDebug() << "network error fetchMedia: " << code;
-		reply->deleteLater();
+		uidReply->deleteLater();
 	});
 }
 
@@ -91,6 +104,21 @@ QNetworkReply *HuyaProvider::doRequest(const QString &rid)
 	return nam_->get(req);
 }
 
+QNetworkReply *HuyaProvider::getUid()
+{
+	QUrl url("https://udblgn.huya.com/web/anonymousLogin");
+	QNetworkRequest req(url);
+	req.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+	QJsonObject jv;
+	jv["appId"] = 5002;
+	jv["byPass"] = 3;
+	jv["context"] = "";
+	jv["version"] = "2.4";
+	jv["data"] = QJsonObject();
+	QJsonDocument doc(jv);
+	return nam_->post(req, doc.toJson());
+}
+
 std::optional<MetaInfo> HuyaProvider::processMeta(const QByteArray& data)
 {
 	auto doc = QJsonDocument::fromJson(data);
@@ -119,13 +147,13 @@ std::optional<MetaInfo> HuyaProvider::processMeta(const QByteArray& data)
 	return mi;
 }
 
-std::optional<MediaInfo> HuyaProvider::processMedia(const QByteArray& data)
+void HuyaProvider::processMedia(const QString& uid, const QByteArray& data)
 {
 	auto doc = QJsonDocument::fromJson(data);
-	if (doc.isNull()) return {};
+	if (doc.isNull()) return;
 	{
 		auto status = doc["status"].toInt(0);
-		if (status != 200) return {};
+		if (status != 200) return;
 	}
 	auto jdata = doc["data"];
 	auto live = jdata["liveStatus"].toString() == "ON";
@@ -134,27 +162,42 @@ std::optional<MediaInfo> HuyaProvider::processMedia(const QByteArray& data)
 	mi.type = "huya";
 	mi.rid = QString::number(pi["profileRoom"].toInt());
 	if (live) {
-		auto stream = jdata["stream"];
-		auto flvs = stream["flv"]["multiLine"];
+		auto stream = jdata["stream"]["baseSteamInfoList"].toArray().first().toObject();
+		if (stream.isEmpty()) return;
 
-		QList<std::tuple<QString, int>> items;
-		auto flvarr = flvs.toArray();
-		for (auto it : flvarr) {
-			auto obj = it.toObject();
-			auto url = obj["url"].toString();
-			auto pri = obj["webPriorityRate"].toInt(0);
-			items.append(std::make_tuple(url, pri));
-		}
-		auto max = std::max_element(items.begin(), items.end(), [](auto l, auto r){
-			return std::get<int>(l) < std::get<int>(r);
-		});
-		if (max == items.end()) return {};
-		mi.video = std::get<QString>(*max);
+		auto flvUrl = stream["sFlvUrl"].toString();
+		auto streamName = stream["sStreamName"].toString();
+		auto flvUrlSuffix = stream["sFlvUrlSuffix"].toString();
+		auto flvAntiCode = stream["sFlvAntiCode"].toString();
+		QUrlQuery q(flvAntiCode);
+		q.addQueryItem("ver", "1");
+		q.addQueryItem("sv", "2110211124");
+		auto seqid = uid.toULongLong() + QDateTime::currentMSecsSinceEpoch();
+		q.addQueryItem("seqid", QString::number(seqid));
+		q.addQueryItem("uid", uid);
+		bool ok = false;
+		auto ct = q.queryItemValue("wsTime").toULongLong(&ok, 16) * 1000 + QDateTime::currentMSecsSinceEpoch() % 1000;
+		auto uuid = QString::number(ct % 100'0000'0000 + QDateTime::currentMSecsSinceEpoch() % 1000).left(10);
+		q.addQueryItem("uuid", uuid);
+
+		auto th = QString("%1|%2|%3").arg(seqid).arg(q.queryItemValue("ctype")).arg(q.queryItemValue("t"));
+		auto ss = QString(QCryptographicHash::hash(th.toUtf8(), QCryptographicHash::Md5).toHex());
+		auto fm = q.queryItemValue("fm");
+		auto th2 = QString(QByteArray::fromBase64(fm.toUtf8()));
+		th2.replace("$0", uid)
+			.replace("$1", streamName)
+			.replace("$2", ss)
+			.replace("$3", q.queryItemValue("wsTime"));
+		auto wsSecret = QString(QCryptographicHash::hash(th2.toUtf8(), QCryptographicHash::Md5).toHex());
+		q.removeQueryItem("wsSecret");
+		q.addQueryItem("wsSecret", wsSecret);
+		auto params = q.toString();
+		mi.video = QString("%1/%2.%3?%4").arg(flvUrl).arg(streamName).arg(flvUrlSuffix).arg(params);
 	} else {
 		auto ld = jdata["liveData"];
 		mi.video = ld["hlsUrl"].toString();
 	}
-	return mi;
+	emit gotMedia(mi);
 }
 
 void HuyaProvider::processSearch(const QByteArray &data)
