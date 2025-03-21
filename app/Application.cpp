@@ -9,7 +9,6 @@
 #include "MpvProps.h"
 
 #include "Source.h"
-// #include "Types.h"
 
 Application::Application(int argc, char* argv[])
 	: QGuiApplication(argc, argv)

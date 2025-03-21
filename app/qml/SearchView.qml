@@ -13,62 +13,62 @@ Item {
     Item {
         id: top
 
-        height: 32
+        height: 64
         width: parent.width
+
+        property string selectedType
 
         anchors {
             top: parent.top
             left: parent.left
         }
 
-        ComboBox {
-            id: combo
+        ButtonGroup {
+            id: buttonGroup
+        }
 
-            width: 80
-            implicitContentWidthPolicy: ComboBox.ContentItemImplicitWidth
-            flat: true
-            textRole: "name"
-            valueRole: "type"
+        Row {
+            id: row
+            height: 32
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+        }
 
-            anchors {
-                top: parent.top
-                left: parent.left
-                bottom: parent.bottom
-            }
-
-            model: ListModel {
-                id: lm
-
-                Component.onCompleted: {
-                    lm.clear();
-                    const ts = Source.getTypes();
-                    ts.forEach((it) => {
-                        lm.append({
-                            "type": it,
-                            "name": Source.getNameByType(it)
-                        });
-                    });
-                    combo.currentIndex = 0;
-                }
-            }
-
+        Component.onCompleted: {
+            const ts = Source.getTypes();
+            ts.forEach((it) => {
+                const name = Source.getNameByType(it);
+                const qmlButton = `
+                    import QtQuick.Controls;
+                    TabButton {
+                        text: "${name}"
+                    }
+                `;
+                const b = Qt.createQmlObject(qmlButton, row);
+                buttonGroup.addButton(b);
+                b.clicked.connect(function() {
+                    top.selectedType = it;
+                });
+            });
+            buttonGroup.buttons[0].checked = true;
+            buttonGroup.buttons[0].clicked();
         }
 
         SearchBox {
             id: search
 
-            height: parent.height
             onSearch: function(text) {
-                let type = combo.currentValue;
+                let type = top.selectedType;
                 Source.search(type, text);
             }
 
             anchors {
                 right: parent.right
-                left: combo.right
-                verticalCenter: parent.verticalCenter
+                left: parent.left
+                bottom: parent.bottom
+                top: row.bottom
             }
-
         }
 
     }
